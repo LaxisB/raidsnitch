@@ -4,6 +4,7 @@ import { useStore } from './store';
 import FileSelect from './pages/FileSelect';
 import Reauth from './pages/ReAuth';
 import Theme from './components/Theme';
+import Dashboard from './pages/Dashboard';
 
 const App: Component = () => {
     const [state] = useStore();
@@ -21,7 +22,7 @@ const App: Component = () => {
                             <Reauth />
                         </Match>
                         <Match when={state.ui.viewstate === 'ready'}>
-                            <div class="page">welcome back</div>
+                            <Dashboard />
                         </Match>
                     </Switch>
                 </Show>

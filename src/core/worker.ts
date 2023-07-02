@@ -1,11 +1,9 @@
 import { RpcEvent, RpcRequest, setupRpcHandlers } from '../lib/rpc';
-import { FsHandler } from './fsHandler';
 import { wrapLog } from '../lib/log';
-import { CoreInterface } from './domain';
 import { emitter } from './emitter';
+import { handlers } from './api';
 
-let log = wrapLog('rpc server');
-let state: FsHandler;
+let log = wrapLog('core worker');
 
 emitter.any((event, payload) => {
     globalThis.postMessage({
@@ -14,32 +12,6 @@ emitter.any((event, payload) => {
         data: payload,
     } as RpcEvent);
 });
-
-const handlers: CoreInterface = {
-    async restore() {
-        if (!state) {
-            state = new FsHandler();
-        }
-        await state.restore();
-    },
-
-    async watchDirectory(handle: FileSystemDirectoryHandle) {
-        if (!state) {
-            return Promise.reject({
-                message: 'Not Initialized',
-            });
-        }
-        state.watchDirectory(handle);
-    },
-    async stop() {
-        if (!state) {
-            return Promise.reject({
-                message: 'Not Initialized',
-            });
-        }
-        state.stop();
-    },
-};
 
 const messageHandler = setupRpcHandlers(
     handlers as any,

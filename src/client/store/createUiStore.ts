@@ -11,7 +11,7 @@ export const initialState: ClientState['ui'] = {
 export const createUiStore: StoreEnhancer = function (worker, actions, state, setState) {
     actions.ui = {} as UiActions;
 
-    worker.on('state', (state) => {
+    worker.on('dirWatcherState', (state) => {
         switch (state) {
             case LogStates.NEED_DIR:
                 setState('ui', 'viewstate', 'need_file');

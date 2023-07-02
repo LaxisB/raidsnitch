@@ -14,6 +14,7 @@ export interface ClientState {
     };
     fs: {
         state: LogStates;
+        debug: Record<string, any[]>;
     };
     ready: boolean;
 }

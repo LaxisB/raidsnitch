@@ -2,6 +2,8 @@ import { get } from 'idb-keyval';
 import { LogStates } from '../../core/domain';
 import { ClientState, StoreEnhancer } from '../domain';
 import { wrapLog } from '../../lib/log';
+import { produce } from 'solid-js/store';
+import { batch, createComputed } from 'solid-js';
 
 export interface FsActions {
     refreshPermissions(): Promise<FileSystemDirectoryHandle | undefined>;
@@ -10,6 +12,7 @@ export interface FsActions {
 
 export const initialState: ClientState['fs'] = {
     state: LogStates.INITIAL,
+    debug: {},
 };
 
 export const createFsStore: StoreEnhancer = function (worker, actions, state, setState) {
@@ -44,8 +47,18 @@ export const createFsStore: StoreEnhancer = function (worker, actions, state, se
         },
     } as FsActions;
 
-    worker.on('state', (state) => {
+    worker.on('dirWatcherState', (state) => {
         log.debug('new fs state', state);
         setState('fs', 'state', state);
+    });
+    worker.on('fsDebug', (debug) => {
+        for (const key in debug) {
+            setState('fs', 'debug', key, (old) => {
+                if (!old) {
+                    return [debug[key]];
+                }
+                return old.concat(debug[key]).slice(-10);
+            });
+        }
     });
 };

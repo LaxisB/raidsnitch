@@ -1,4 +1,4 @@
-import type { FsHandler } from './fsHandler';
+import type { DirWatcher } from './DirWatcher';
 
 export interface CoreInterface {
     restore: () => Promise<void>;
@@ -7,7 +7,8 @@ export interface CoreInterface {
 }
 
 export interface CoreEvents {
-    state: FsHandler['state'];
+    dirWatcherState: LogStates;
+    fsDebug: Record<string, any>;
 }
 
 export enum LogStates {
@@ -16,6 +17,8 @@ export enum LogStates {
     NEED_PERMISSION = 'need_permission',
     HAS_DIR = 'has_dir',
     HAS_FILE = 'has_file',
-    READING_FILE = 'reading_file',
-    IDLE = 'idle',
+}
+
+export interface FileHandler {
+    handleFileChange(handle: FileSystemFileHandle): unknown;
 }
