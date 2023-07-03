@@ -8,8 +8,8 @@ let dirWatcher: DirWatcher;
 export const handlers: CoreInterface = {
     async restore() {
         if (!dirWatcher) {
-            // dirWatcher = new DirWatcher(new LiveHandler());
-            dirWatcher = new DirWatcher(new ReplayHandler());
+            dirWatcher = new DirWatcher(new LiveHandler());
+            // dirWatcher = new DirWatcher(new ReplayHandler());
         }
         await dirWatcher.restore();
     },
