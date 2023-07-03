@@ -12,6 +12,8 @@ export default (props: SparklineProps) => {
     let [viewBox, setViewBox] = createSignal('0 0 0 0 ');
     let [path, setPath] = createSignal('');
 
+    let intl = new Intl.NumberFormat('en-US');
+
     onMount(() => {
         const width = Math.max(el.clientWidth, props.window);
         const height = props.height;
@@ -28,7 +30,6 @@ export default (props: SparklineProps) => {
                 let y = height - (height * ilerp(min, max, v) ?? height / 2);
                 if (isNaN(y)) {
                     y = height / 2;
-                    debugger;
                 }
                 return `${i * perItemOffset} ${y}`;
             })
@@ -36,11 +37,13 @@ export default (props: SparklineProps) => {
         setPath(path);
     });
 
+    const t = props.data[props.data.length - 1];
+
     return (
         <svg height={props.height} ref={(e) => (el = e)} class={classes.sparkline} viewBox={viewBox()}>
             <path d={`M${path()}`} fill="none" stroke="white" />
             <text y={props.height / 2} fill="white" dominant-baseline="middle">
-                {props.data[props.data.length - 1]}
+                {t < 1 ? t.toPrecision(2) : intl.format(t)}
             </text>
         </svg>
     );

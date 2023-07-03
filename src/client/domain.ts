@@ -4,6 +4,7 @@ import { Emitter } from '../lib/emitter';
 import { AsyncClient } from '../lib/rpc';
 import type { FsActions } from './store/createFsStore';
 import type { UiActions } from './store/createUiStore';
+import { LogActions } from './store/createLogStore';
 
 export type ClientUiViewstate = 'initial' | 'need_file' | 'need_permisison' | 'ready';
 
@@ -16,12 +17,16 @@ export interface ClientState {
         state: LogStates;
         debug: Record<string, any[]>;
     };
+    log: {
+        lines: string[];
+    };
     ready: boolean;
 }
 
 export interface ClientActions {
     ui: UiActions;
     fs: FsActions;
+    log: LogActions;
 }
 
 export type ClientWorker = Emitter<CoreEvents> & AsyncClient<CoreInterface>;

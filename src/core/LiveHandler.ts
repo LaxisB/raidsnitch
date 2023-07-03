@@ -5,7 +5,7 @@ import { emitter } from './emitter';
 
 const log = wrapLog('live_log_handler');
 
-export class LiveLogHandler implements FileHandler {
+export class LiveHandler implements FileHandler {
     private handle: FileSystemFileHandle | null = null;
     private offset = 0;
     private lastReadTimestamp = Date.now();
@@ -13,7 +13,6 @@ export class LiveLogHandler implements FileHandler {
     async handleFileChange(newHandle: FileSystemFileHandle) {
         this.handle = newHandle;
         this.offset = 0;
-        this.debugFileStats();
         this.watch();
     }
 
@@ -21,8 +20,6 @@ export class LiveLogHandler implements FileHandler {
         if (!this.handle) {
             return;
         }
-        const file = await this.handle.getFile();
-
         this.loopGetFileSize();
     }
 
@@ -35,7 +32,7 @@ export class LiveLogHandler implements FileHandler {
         const f = await this.handle.getFile();
         if (f.size != prev) {
             console.log(deltaTime);
-            emitter.emit('fsDebug', {
+            emitter.emit('logDebug', {
                 Name: f.name,
                 'Size (MiB)': Math.fround(f.size / (1024 * 1024)),
                 'Δ Size (KiB)': Math.fround((f.size - this.offset) / 1024),
@@ -47,12 +44,5 @@ export class LiveLogHandler implements FileHandler {
         }
 
         setTimeout(() => this.loopGetFileSize(f.size), Math.min(deltaTime, 50));
-    }
-
-    private async debugFileStats() {
-        if (!this.handle) {
-            return;
-        }
-        const f = await this.handle.getFile();
     }
 }

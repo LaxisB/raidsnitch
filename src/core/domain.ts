@@ -8,7 +8,8 @@ export interface CoreInterface {
 
 export interface CoreEvents {
     dirWatcherState: LogStates;
-    fsDebug: Record<string, any>;
+    logDebug: Record<string, any>;
+    logEvents: any[];
 }
 
 export enum LogStates {

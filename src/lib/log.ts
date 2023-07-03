@@ -5,7 +5,6 @@ export function wrapLog(component: string) {
     // assuming that the given prefix is "component:subcomponent"
     // the log is disabled if either "component" or "component:subcomponent" is disabled
     const isDisabled = () => {
-        const parentPrefix = prefix.split(':')[0];
         return disabledPrefixes.some((p) => prefix.startsWith(p));
     };
     return {
@@ -23,6 +22,9 @@ export function wrapLog(component: string) {
         },
         error(...args: any[]) {
             isDisabled() ? null : console.error(prefix, ...args);
+        },
+        table(args: any[], props?: string[]) {
+            isDisabled() ? null : console.table(args, props);
         },
     };
 }

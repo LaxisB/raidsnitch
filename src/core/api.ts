@@ -1,14 +1,15 @@
 import { CoreInterface, FileHandler } from './domain';
 import { DirWatcher } from './DirWatcher';
-import { LiveLogHandler } from './LiveLogHandler';
+import { ReplayHandler } from './ReplayHandler';
+import { LiveHandler } from './LiveHandler';
 
 let dirWatcher: DirWatcher;
-let logHandler: FileHandler;
 
 export const handlers: CoreInterface = {
     async restore() {
         if (!dirWatcher) {
-            dirWatcher = new DirWatcher(new LiveLogHandler());
+            // dirWatcher = new DirWatcher(new LiveHandler());
+            dirWatcher = new DirWatcher(new ReplayHandler());
         }
         await dirWatcher.restore();
     },

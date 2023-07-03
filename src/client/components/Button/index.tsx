@@ -1,8 +1,6 @@
 import { ParentProps } from 'solid-js';
 import classes from './button.module.scss';
 
-console.log(classes);
-
 interface ButtonProps extends ParentProps {
     primary?: boolean;
     cta?: boolean;

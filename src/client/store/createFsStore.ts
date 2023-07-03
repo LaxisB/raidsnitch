@@ -51,14 +51,22 @@ export const createFsStore: StoreEnhancer = function (worker, actions, state, se
         log.debug('new fs state', state);
         setState('fs', 'state', state);
     });
-    worker.on('fsDebug', (debug) => {
-        for (const key in debug) {
-            setState('fs', 'debug', key, (old) => {
-                if (!old) {
-                    return [debug[key]];
+    worker.on('logDebug', (debug) => {
+        batch(() => {
+            Object.keys(state.fs.debug).forEach((key) => {
+                if (key in debug == false) {
+                    setState('fs', 'debug', key, undefined as any);
                 }
-                return old.concat(debug[key]).slice(-10);
             });
-        }
+
+            for (const key in debug) {
+                setState('fs', 'debug', key, (old) => {
+                    if (!old) {
+                        return [debug[key]];
+                    }
+                    return old.concat(debug[key]).slice(-10);
+                });
+            }
+        });
     });
 };
