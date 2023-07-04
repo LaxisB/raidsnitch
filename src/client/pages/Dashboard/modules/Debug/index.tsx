@@ -25,7 +25,7 @@ export default function (props: DebugProps) {
                         <div class={classes.debugValue}>
                             {typeof dbg.value[0] === 'number' ? (
                                 <>
-                                    <Sparkline window={10} height={32} data={dbg.value} />
+                                    <Sparkline window={100} height={32} data={dbg.value} />
                                 </>
                             ) : (
                                 dbg.value[dbg.value.length - 1]

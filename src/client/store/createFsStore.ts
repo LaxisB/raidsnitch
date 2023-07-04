@@ -2,15 +2,18 @@ import { get } from 'idb-keyval';
 import { LogStates } from '../../core/domain';
 import { ClientState, StoreEnhancer } from '../domain';
 import { wrapLog } from '../../lib/log';
-import { produce } from 'solid-js/store';
-import { batch, createComputed } from 'solid-js';
+import { batch } from 'solid-js';
 
 export interface FsActions {
     refreshPermissions(): Promise<FileSystemDirectoryHandle | undefined>;
     openFile(): Promise<void>;
 }
+export interface FsState {
+    state: LogStates;
+    debug: Record<string, any[]>;
+}
 
-export const initialState: ClientState['fs'] = {
+export const initialState: FsState = {
     state: LogStates.INITIAL,
     debug: {},
 };
@@ -53,18 +56,20 @@ export const createFsStore: StoreEnhancer = function (worker, actions, state, se
     });
     worker.on('logDebug', (debug) => {
         batch(() => {
-            Object.keys(state.fs.debug).forEach((key) => {
-                if (key in debug == false) {
-                    setState('fs', 'debug', key, undefined as any);
-                }
-            });
+            if (debug.clear) {
+                Object.keys(state.fs.debug).forEach((key) => {
+                    if (key in debug == false) {
+                        setState('fs', 'debug', key, undefined as any);
+                    }
+                });
+            }
 
             for (const key in debug) {
                 setState('fs', 'debug', key, (old) => {
                     if (!old) {
                         return [debug[key]];
                     }
-                    return old.concat(debug[key]).slice(-10);
+                    return old.concat(debug[key]).slice(-100);
                 });
             }
         });

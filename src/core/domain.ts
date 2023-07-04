@@ -10,6 +10,7 @@ export interface CoreEvents {
     dirWatcherState: LogStates;
     logDebug: Record<string, any>;
     logEvents: any[];
+    logDone: boolean;
 }
 
 export enum LogStates {

@@ -1,8 +1,11 @@
 import type { ClientState, StoreEnhancer } from '../domain';
 
 export interface LogActions {}
+export interface LogState {
+    lines: string[];
+}
 
-export const initialState: ClientState['log'] = {
+export const initialState: LogState = {
     lines: [],
 };
 

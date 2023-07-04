@@ -1,11 +1,18 @@
 import { LogStates } from '../../core/domain';
 import type { ClientState, StoreEnhancer } from '../domain';
 
+export type ClientUiViewstate = 'initial' | 'need_file' | 'need_permisison' | 'ready';
 export interface UiActions {}
+export interface UiState {
+    viewstate: ClientUiViewstate;
+    loading: number;
+    showLog: boolean;
+}
 
 export const initialState: ClientState['ui'] = {
     viewstate: 'initial',
     loading: 0,
+    showLog: false,
 };
 
 export const createUiStore: StoreEnhancer = function (worker, actions, state, setState) {
@@ -25,5 +32,7 @@ export const createUiStore: StoreEnhancer = function (worker, actions, state, se
                 break;
         }
     });
-    return actions;
+    worker.on('logDone', (done) => {
+        setState('ui', 'showLog', done);
+    });
 };

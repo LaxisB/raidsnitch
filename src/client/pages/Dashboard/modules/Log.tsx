@@ -5,7 +5,10 @@ export default function (props: any) {
     let ref: HTMLElement;
     const [state] = useStore();
     createEffect(() => {
-        const addedLines = state.log.lines.map((line: any) => line.event).join('\n');
+        const addedLines = state.log.lines
+            .slice(-100)
+            .map((line: any) => JSON.stringify(line, null, 4))
+            .join('\n');
         ref.textContent = addedLines;
     });
 

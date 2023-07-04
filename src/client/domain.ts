@@ -2,24 +2,14 @@ import { SetStoreFunction } from 'solid-js/store';
 import { CoreEvents, CoreInterface, LogStates } from '../core/domain';
 import { Emitter } from '../lib/emitter';
 import { AsyncClient } from '../lib/rpc';
-import type { FsActions } from './store/createFsStore';
-import type { UiActions } from './store/createUiStore';
-import { LogActions } from './store/createLogStore';
-
-export type ClientUiViewstate = 'initial' | 'need_file' | 'need_permisison' | 'ready';
+import type { FsActions, FsState } from './store/createFsStore';
+import type { UiActions, UiState } from './store/createUiStore';
+import { LogActions, LogState } from './store/createLogStore';
 
 export interface ClientState {
-    ui: {
-        viewstate: ClientUiViewstate;
-        loading: number;
-    };
-    fs: {
-        state: LogStates;
-        debug: Record<string, any[]>;
-    };
-    log: {
-        lines: string[];
-    };
+    ui: UiState;
+    fs: FsState;
+    log: LogState;
     ready: boolean;
 }
 
