@@ -68,7 +68,7 @@ export class Parser {
         // this is the only
         // we're checking for length to avoid matching long strings
         if (!rest || (rest.length < 2 && /\w*/.test(rest))) {
-            return stack.value;
+            return stack.value[0];
         }
         // nil val
         if (rest.startsWith('nil')) {
