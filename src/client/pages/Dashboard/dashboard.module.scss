@@ -10,6 +10,7 @@
 .frame {
     padding: 0.5em;
     border: 1px solid var(--app-foreground);
+    background: var(--app-background);
 
     &--debug {
         display: block;
@@ -17,9 +18,13 @@
         top: 1em;
         right: 1em;
     }
+    &--actions {
+        grid-column: 10 / 13;
+        grid-row: 6/6;
+    }
     &--log {
         grid-column: 1 / span 12;
-        grid-row: 1 / span 12;
+        grid-row: 1 / span 6;
         overflow: scroll;
     }
 }

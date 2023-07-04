@@ -74,7 +74,6 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
     };
 
     worker.on('logEvents', (lines) => {
-        log.debug('new log lines', lines);
         setState('log', 'readTime', Date.now() - state.log.startTime);
         setState('log', 'lines', (oldLines) => [...oldLines, ...lines].slice(-100));
     });

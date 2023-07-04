@@ -38,10 +38,15 @@ export class DirWatcher {
             throw new Error("don't have permission to read directory");
         }
 
+        this.setState(LogStates.HAS_DIR);
+
         this.watchForFileChanges();
     }
 
-    stop() {
+    close() {
+        if (this.fileHandler) {
+            this.fileHandler.close();
+        }
         if (this.readDirTimeout) {
             clearTimeout(this.readDirTimeout);
             this.readDirTimeout = null;

@@ -12,3 +12,10 @@ html {
 body {
     width: 100vw;
 }
+
+hr {
+    height: 1px;
+    border: none;
+    background: var(--app-foreground);
+    opacity: 0.2;
+}

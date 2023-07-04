@@ -1,13 +1,12 @@
 import { formatFileSize } from '../format';
 import { wrapLog } from '../log';
-import { FileHandler } from '../../core/domain';
 import { emitter } from '../../core/emitter';
 import { Parser } from '../parser';
+import { BaseFileHandler } from './FileHandler';
 
 const log = wrapLog('replay_handler');
-export class ReplayHandler implements FileHandler {
+export class ReplayHandler extends BaseFileHandler {
     private readTime = 0;
-    private partial = '';
     private parser!: Parser;
     private startTime = 0;
     private totalLines = 0;
@@ -33,9 +32,7 @@ export class ReplayHandler implements FileHandler {
         const { done, value } = await reader.read();
 
         this.readCount += value?.length ?? 0;
-        this.partial += value ?? '';
-        const lines = this.partial.split('\n');
-        this.partial = lines.pop()!;
+        const lines = this.readText(value);
 
         if (lines.length) {
             this.totalLines += lines.length;
@@ -52,7 +49,7 @@ export class ReplayHandler implements FileHandler {
                 'Line Parse Time (ms)': (Date.now() - this.readTime) / lines.length,
             });
             this.readTime = now;
-            requestAnimationFrame(() => this.loopRead(file, reader));
+            this.schedule(() => this.loopRead(file, reader));
         } else {
             const total = Date.now() - this.startTime;
             emitter.emit('logDebug', {

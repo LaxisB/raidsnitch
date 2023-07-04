@@ -24,4 +24,5 @@ export enum LogStates {
 
 export interface FileHandler {
     handleFileChange(handle: FileSystemFileHandle): unknown;
+    close(): Promise<void>;
 }

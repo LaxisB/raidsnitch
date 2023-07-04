@@ -1,18 +1,16 @@
-import { formatFileSize } from '../format';
 import { wrapLog } from '../log';
 import { Parser } from '../parser';
 import { sleep } from '../utils';
-import { FileHandler } from '../../core/domain';
 import { emitter } from '../../core/emitter';
+import { BaseFileHandler } from './FileHandler';
 
 const log = wrapLog('live_log_handler');
 
-export class LiveHandler implements FileHandler {
+export class LiveHandler extends BaseFileHandler {
     private handle!: FileSystemFileHandle;
     private offset = 0;
 
     private readTime = 0;
-    private partial = '';
     private parser!: Parser;
     private totalLines = 0;
     private noDataReadCount = 0;
@@ -24,7 +22,6 @@ export class LiveHandler implements FileHandler {
         }
         log.log('handle change', handle.name);
         this.offset = 0;
-        this.partial = '';
         this.handle = handle;
         this.readTime = Date.now();
         this.parser = new Parser(file.lastModified);
@@ -32,6 +29,9 @@ export class LiveHandler implements FileHandler {
     }
 
     private async loopRead() {
+        if (this.doStop) {
+            return;
+        }
         const file = await this.handle!.getFile();
 
         const now = Date.now();
@@ -48,14 +48,12 @@ export class LiveHandler implements FileHandler {
             // exponential backoff from 2 -> 1024 ms
             const timeout = 2 ** this.noDataReadCount;
             await sleep(timeout);
-            requestAnimationFrame(() => this.loopRead());
+            this.schedule(() => this.loopRead());
             return;
         }
 
         this.noDataReadCount = 0;
-        this.partial += await file.slice(this.offset).text();
-        const lines = this.partial.split('\n');
-        this.partial = lines.pop() ?? '';
+        const lines = this.readText(await file.slice(this.offset).text());
 
         this.totalLines += lines.length;
         await this.handleLines(lines);
@@ -73,7 +71,7 @@ export class LiveHandler implements FileHandler {
         this.readTime = now;
         this.offset = file.size;
 
-        requestAnimationFrame(() => this.loopRead());
+        this.schedule(() => this.loopRead());
     }
 
     async handleLines(lines: string[]) {
