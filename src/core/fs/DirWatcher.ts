@@ -1,7 +1,7 @@
 import { get, set } from 'idb-keyval';
-import { FileHandler, LogStates } from './domain';
-import { wrapLog } from '../lib/log';
-import { emitter } from './emitter';
+import { FileHandler, LogStates } from '../domain';
+import { wrapLog } from '../../lib/log';
+import { emitter } from '../emitter';
 
 const log = wrapLog('dir_watcher');
 

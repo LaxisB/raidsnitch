@@ -1,4 +1,4 @@
-import type { DirWatcher } from './DirWatcher';
+import type { DirWatcher } from './fs/DirWatcher';
 
 export interface CoreInterface {
     restore: () => Promise<void>;

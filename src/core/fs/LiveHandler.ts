@@ -1,7 +1,7 @@
-import { formatFileSize } from '../lib/format';
-import { wrapLog } from '../lib/log';
-import { FileHandler } from './domain';
-import { emitter } from './emitter';
+import { formatFileSize } from '../../lib/format';
+import { wrapLog } from '../../lib/log';
+import { FileHandler } from '../domain';
+import { emitter } from '../emitter';
 
 const log = wrapLog('live_log_handler');
 
