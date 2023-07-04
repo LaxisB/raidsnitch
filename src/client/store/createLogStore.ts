@@ -1,7 +1,7 @@
 import { batch } from 'solid-js';
 import { LogStates } from '../../core/domain';
 import { wrapLog } from '../../lib/log';
-import type { ClientState, StoreEnhancer } from '../domain';
+import type { StoreEnhancer } from '../domain';
 import { get } from 'idb-keyval';
 
 export interface LogActions {
@@ -14,7 +14,7 @@ export interface LogState {
     isReading: boolean;
     startTime: number;
     readTime: number;
-    lines: string[];
+    lines: any[];
     debug: Record<string, any[]>;
 }
 
@@ -76,7 +76,7 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
     worker.on('logEvents', (lines) => {
         log.debug('new log lines', lines);
         setState('log', 'readTime', Date.now() - state.log.startTime);
-        setState('log', 'lines', lines);
+        setState('log', 'lines', (oldLines) => [...oldLines, ...lines].slice(-100));
     });
     worker.on('dirWatcherState', (state) => {
         log.debug('new fs state', state);

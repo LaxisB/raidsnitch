@@ -1,4 +1,3 @@
-import { useStore } from '../../store';
 import classes from './dashboard.module.scss';
 import Debug from './modules/Debug';
 import Log from './modules/Log';

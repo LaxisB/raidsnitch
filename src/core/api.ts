@@ -1,7 +1,7 @@
-import { CoreInterface, FileHandler, LogStates } from './domain';
-import { DirWatcher } from './fs/DirWatcher';
-import { ReplayHandler } from './fs/ReplayHandler';
-import { LiveHandler } from './fs/LiveHandler';
+import { CoreInterface, LogStates } from './domain';
+import { DirWatcher } from '../lib/fs/DirWatcher';
+import { ReplayHandler } from '../lib/fs/ReplayHandler';
+import { LiveHandler } from '../lib/fs/LiveHandler';
 import { emitter } from './emitter';
 
 let dirWatcher: DirWatcher;

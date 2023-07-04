@@ -1,8 +1,8 @@
-import { formatFileSize } from '../../lib/format';
-import { wrapLog } from '../../lib/log';
-import { FileHandler } from '../domain';
-import { emitter } from '../emitter';
-import { Parser } from '../../lib/parser';
+import { formatFileSize } from '../format';
+import { wrapLog } from '../log';
+import { FileHandler } from '../../core/domain';
+import { emitter } from '../../core/emitter';
+import { Parser } from '../parser';
 
 const log = wrapLog('replay_handler');
 export class ReplayHandler implements FileHandler {

@@ -1,21 +1,19 @@
-import { formatFileSize } from '../../lib/format';
-import { wrapLog } from '../../lib/log';
-import { Parser } from '../../lib/parser';
-import { sleep } from '../../lib/utils';
-import { FileHandler } from '../domain';
-import { emitter } from '../emitter';
+import { formatFileSize } from '../format';
+import { wrapLog } from '../log';
+import { Parser } from '../parser';
+import { sleep } from '../utils';
+import { FileHandler } from '../../core/domain';
+import { emitter } from '../../core/emitter';
 
 const log = wrapLog('live_log_handler');
 
 export class LiveHandler implements FileHandler {
     private handle!: FileSystemFileHandle;
     private offset = 0;
-    private logReader!: ReturnType<typeof createReader>;
 
     private readTime = 0;
     private partial = '';
     private parser!: Parser;
-    private startTime = 0;
     private totalLines = 0;
     private noDataReadCount = 0;
 
@@ -24,11 +22,11 @@ export class LiveHandler implements FileHandler {
         if (!handle) {
             return;
         }
+        log.log('handle change', handle.name);
         this.offset = 0;
         this.partial = '';
         this.handle = handle;
         this.readTime = Date.now();
-        this.startTime = this.readTime;
         this.parser = new Parser(file.lastModified);
         this.loopRead();
     }
@@ -44,24 +42,23 @@ export class LiveHandler implements FileHandler {
         }
 
         if (file.size == this.offset) {
-            this.noDataReadCount = Math.max(10, this.noDataReadCount + 1);
+            this.noDataReadCount = Math.min(10, this.noDataReadCount + 1);
             log.debug('No new data');
 
             // exponential backoff from 2 -> 1024 ms
             const timeout = 2 ** this.noDataReadCount;
-            setTimeout(() => this.loopRead(), timeout);
+            await sleep(timeout);
+            requestAnimationFrame(() => this.loopRead());
             return;
         }
 
         this.noDataReadCount = 0;
         this.partial += await file.slice(this.offset).text();
-        const lines = this.partial.split(/\r?\n/);
+        const lines = this.partial.split('\n');
         this.partial = lines.pop() ?? '';
 
-        if (lines.length) {
-            this.totalLines += lines.length;
-            await this.handleLines(lines);
-        }
+        this.totalLines += lines.length;
+        await this.handleLines(lines);
 
         emitter.emit('logDebug', {
             Name: file.name,
