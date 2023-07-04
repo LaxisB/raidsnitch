@@ -74,8 +74,9 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
     };
 
     worker.on('logEvents', (lines) => {
+        log.debug('new log lines', lines);
         setState('log', 'readTime', Date.now() - state.log.startTime);
-        setState('log', 'lines', (l) => lines);
+        setState('log', 'lines', lines);
     });
     worker.on('dirWatcherState', (state) => {
         log.debug('new fs state', state);
@@ -85,7 +86,6 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
         setState('log', 'isReading', !done);
     });
     worker.on('logDebug', (debug) => {
-        console.log('debug!');
         batch(() => {
             if (debug.clear) {
                 Object.keys(state.log.debug).forEach((key) => {

@@ -59,6 +59,7 @@ export class DirWatcher {
         if (file && file.name != this.fileHandle?.name) {
             this.fileHandle = file;
             this.setState(LogStates.HAS_FILE);
+            emitter.emit('logDone', false);
             this.fileHandler.handleFileChange(file);
         }
 

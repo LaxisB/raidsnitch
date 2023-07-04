@@ -20,7 +20,14 @@ export class Parser {
 
     public parseLine(line: string) {
         const [timeblock, rest] = line.split('  ');
-        if (!timeblock || !rest) return;
+        if (!timeblock || !rest)
+            return {
+                time: 0,
+                offset: this.offset++,
+                event: null,
+                payload: null,
+                line,
+            };
 
         const firstComma = rest.indexOf(',');
         const event = rest.slice(0, firstComma);
@@ -35,6 +42,7 @@ export class Parser {
             offset: this.offset++,
             event,
             payload,
+            line,
         };
     }
 

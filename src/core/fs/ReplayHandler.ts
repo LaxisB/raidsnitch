@@ -45,7 +45,7 @@ export class ReplayHandler implements FileHandler {
         if (!done) {
             emitter.emit('logDebug', {
                 Name: file.name,
-                Size: formatFileSize(file.size),
+                'Size (MiB)': Math.fround(file.size / (1024 * 1024)),
                 Progress: ((this.readCount / file.size) * 100).toFixed(2) + '%',
                 'Chunk Size': lines.length,
                 'Δ Time (ms)': deltaTime,
