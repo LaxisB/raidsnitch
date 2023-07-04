@@ -35,7 +35,7 @@ export class ReplayHandler extends BaseFileHandler {
 
         const reader = file.stream().pipeThrough(new TextDecoderStream()).getReader();
         this.loopRead(file, reader);
-        setInterval(() => this.emitCachedEvents(), REPLAY_INTERVAL);
+        this.cachedEventsInterval = setInterval(() => this.emitCachedEvents(), REPLAY_INTERVAL);
     }
 
     async close() {
@@ -76,6 +76,7 @@ export class ReplayHandler extends BaseFileHandler {
             this.readTime = now;
             this.schedule(() => this.loopRead(file, reader));
         } else {
+            clearInterval(this.cachedEventsInterval);
             const total = Date.now() - this.startTime;
             emitter.emit('logDebug', {
                 Name: file.name,

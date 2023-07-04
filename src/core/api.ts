@@ -32,12 +32,14 @@ export const handlers: CoreInterface = {
     },
     async readFile(handle: FileSystemFileHandle) {
         reset();
-        const handler = new ReplayHandler(snitch);
+        fileWatcher = new ReplayHandler(snitch);
         emitter.emit('dirWatcherState', LogStates.HAS_FILE);
-        handler.handleFileChange(handle);
+        fileWatcher.handleFileChange(handle);
     },
     async stop() {
         dirWatcher?.close();
         fileWatcher?.close();
+        reset();
+        return 'ok';
     },
 };
