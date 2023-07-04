@@ -85,6 +85,7 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
         setState('log', 'isReading', !done);
     });
     worker.on('logDebug', (debug) => {
+        console.log('debug!');
         batch(() => {
             if (debug.clear) {
                 Object.keys(state.log.debug).forEach((key) => {
@@ -99,7 +100,7 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
                     if (!old) {
                         return [debug[key]];
                     }
-                    return old.concat(debug[key]).slice(-100);
+                    return old.concat(debug[key]);
                 });
             }
         });

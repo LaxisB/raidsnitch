@@ -16,16 +16,16 @@ export default (props: SparklineProps) => {
 
     onMount(() => {
         const width = Math.max(el.clientWidth, props.window);
+        const items = props.data.slice(-props.window);
         const height = props.height;
 
-        const min = Math.min(...props.data) ?? 0;
-        const max = Math.max(...props.data) ?? 0;
+        const min = Math.min(...items) ?? 0;
+        const max = Math.max(...items) ?? 0;
 
-        const perItemOffset = width / props.data.length;
+        const perItemOffset = width / items.length;
 
         setViewBox(`0 0 ${width} ${height}`);
-        const path = props.data
-            .slice(-props.window)
+        const path = items
             .map((v, i) => {
                 let y = height - (height * ilerp(min, max, v) ?? height / 2);
                 if (isNaN(y)) {
@@ -41,8 +41,8 @@ export default (props: SparklineProps) => {
 
     return (
         <svg height={props.height} ref={(e) => (el = e)} class={classes.sparkline} viewBox={viewBox()}>
-            <path d={`M${path()}`} fill="none" stroke="white" />
-            <text y={props.height / 2} fill="white" dominant-baseline="middle">
+            <path d={`M${path()}`} fill="none" />
+            <text y={props.height / 2} dominant-baseline="middle">
                 {t < 1 ? t.toPrecision(2) : intl.format(t)}
             </text>
         </svg>
