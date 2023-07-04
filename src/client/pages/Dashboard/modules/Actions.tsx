@@ -8,6 +8,9 @@ export default function (props: any) {
         <div {...props}>
             <Button onclick={actions.log.watchFolder}>watch directory</Button>
             <Button onclick={actions.log.openFile}>replay file</Button>
+            <Button primary onclick={actions.log.stop}>
+                stop
+            </Button>
         </div>
     );
 }
