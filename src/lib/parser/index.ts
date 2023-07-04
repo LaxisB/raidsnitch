@@ -1,3 +1,4 @@
+import { LogEvent } from '../snitch/domain';
 import { Stack } from './Stack';
 
 const LIST_START = ['[', '('];
@@ -6,6 +7,16 @@ const SEPARATORS = [',', ...LIST_START, ...LIST_END];
 
 type LogBottomValues = null | number | string;
 type LogValues = LogBottomValues | LogValues[];
+
+interface ErrorLine {
+    time: 0;
+    offset: number;
+    event: null;
+    payload: null;
+    line: string;
+}
+
+export type LogLine = LogEvent | ErrorLine;
 
 export class Parser {
     private offset = 0;
@@ -18,23 +29,23 @@ export class Parser {
     // but that's sad enough already so it doesn't matter if this breaks as well
     constructor(private referenceTime: number) {}
 
-    public parseLine(line: string) {
+    public parseLine(line: string): LogLine {
         const [timeblock, rest] = line.split('  ');
-        if (!timeblock || !rest)
+        if (!timeblock || !rest) {
             return {
                 time: 0,
                 offset: this.offset++,
                 event: null,
                 payload: null,
                 line,
-            };
+            } as ErrorLine;
+        }
 
         const firstComma = rest.indexOf(',');
         const event = rest.slice(0, firstComma);
         const body = rest.slice(firstComma + 1);
 
         const time = this.parseTime(timeblock);
-
         const payload = this.parsePayload(body);
 
         return {
@@ -43,7 +54,7 @@ export class Parser {
             event,
             payload,
             line,
-        };
+        } as LogLine;
     }
 
     private parseTime(timeBlock: string) {
@@ -61,33 +72,33 @@ export class Parser {
     private parsePayload(body: string) {
         const stack = new Stack();
         const payload = this._parsePayload(body, stack);
-        return payload as LogValues;
+        return payload as LogValues[];
     }
     private _parsePayload(rest: string, stack: Stack): any[] {
         // EOL :::: exit branch
         // this is the only
         // we're checking for length to avoid matching long strings
-        if (!rest || (rest.length < 2 && /\w*/.test(rest))) {
-            return stack.value[0];
+        if (!rest || (rest.length < 2 && /^\w*$/.test(rest))) {
+            return stack.value;
         }
         // nil val
         if (rest.startsWith('nil')) {
-            stack.pushValue(null);
+            stack.addVal(null);
             return this._parsePayload(rest.slice(3), stack);
         }
         // flags
         if (rest.startsWith('0x')) {
             const [val, rest2] = this.splitAtSeparator(rest);
             const flags = this.parseFlags(val);
-            stack.pushValue(flags);
+            stack.addVal(flags);
             return this._parsePayload(rest2, stack);
         }
         // quoted string
         if (rest.startsWith('"')) {
             // assume that the char following the closing quote is a separator
             // there is no precedent to indicate that this is not always the case
-            const [val, rest2] = this.splitAtSeparator(rest.slice(1));
-            stack.pushValue(val.slice(0, -1).trim());
+            const [val, rest2] = this.splitAtQuote(rest.slice(1));
+            stack.addVal(val.slice(0, -1).trim());
             return this._parsePayload(rest2, stack);
         }
         // lists
@@ -96,15 +107,14 @@ export class Parser {
             return this._parsePayload(rest.slice(1), stack);
         }
         if (LIST_END.includes(rest[0])) {
-            const val = stack.popLayer();
-            stack.pushValue(val);
+            stack.collapseLayer();
             // remove the separator and trailing comma
             const rest2 = rest.slice(1).replace(/^,/, '');
             return this._parsePayload(rest2, stack);
         }
         // value (int/float/const)
         const [val, rest2] = this.splitAtSeparator(rest);
-        stack.pushValue(val.trim());
+        stack.addVal(this.parsePrimitive(val));
         return this._parsePayload(rest2, stack);
     }
 
@@ -118,6 +128,15 @@ export class Parser {
         return Number.parseInt(flags.slice(2), 16);
     }
 
+    private parsePrimitive(val: string) {
+        const isNum = /^\d+(\.\d+)?$/.test(val);
+        return isNum ? Number.parseFloat(val) : val;
+    }
+
+    splitAtQuote(string: string) {
+        const offset = string.indexOf('"');
+        return [string.slice(0, offset + 1), string.slice(offset + 2)];
+    }
     splitAtSeparator(string: string) {
         const offsets = SEPARATORS.map((sep) => string.indexOf(sep)).filter((offset) => offset > -1);
         const min = Math.min(...offsets);

@@ -1,16 +1,28 @@
 import { formatFileSize } from '../format';
 import { wrapLog } from '../log';
 import { emitter } from '../../core/emitter';
-import { Parser } from '../parser';
+import { LogLine, Parser } from '../parser';
 import { BaseFileHandler } from './FileHandler';
+import { sleep } from '../utils';
 
 const log = wrapLog('replay_handler');
+
+// how often to emit cached events
+const REPLAY_INTERVAL = 200;
+
+// replay speed
+const TIMESCALE = 10;
+
 export class ReplayHandler extends BaseFileHandler {
     private readTime = 0;
     private parser!: Parser;
     private startTime = 0;
     private totalLines = 0;
     private readCount = 0;
+
+    private cachedEvents: LogLine[] = [];
+    private emissionTargetTime = 0;
+    private cachedEventsInterval: any = null;
 
     async handleFileChange(handle: FileSystemFileHandle) {
         const file = await handle.getFile();
@@ -23,11 +35,23 @@ export class ReplayHandler extends BaseFileHandler {
 
         const reader = file.stream().pipeThrough(new TextDecoderStream()).getReader();
         this.loopRead(file, reader);
+        setInterval(() => this.emitCachedEvents(), REPLAY_INTERVAL);
+    }
+
+    async close() {
+        this.cachedEventsInterval && clearInterval(this.cachedEventsInterval);
+        return await super.close();
     }
 
     private async loopRead(file: File, reader: ReadableStreamDefaultReader<string>) {
         const now = Date.now();
         const deltaTime = now - this.readTime;
+
+        if (this.cachedEvents.length >= 1000) {
+            await sleep(100);
+            this.schedule(() => this.loopRead(file, reader));
+            return;
+        }
 
         const { done, value } = await reader.read();
 
@@ -43,6 +67,7 @@ export class ReplayHandler extends BaseFileHandler {
             emitter.emit('logDebug', {
                 Name: file.name,
                 'Size (MiB)': Math.fround(file.size / (1024 * 1024)),
+                Backlog: this.cachedEvents.length,
                 Progress: ((this.readCount / file.size) * 100).toFixed(2) + '%',
                 'Chunk Size': lines.length,
                 'Δ Time (ms)': deltaTime,
@@ -55,6 +80,7 @@ export class ReplayHandler extends BaseFileHandler {
             emitter.emit('logDebug', {
                 Name: file.name,
                 Size: formatFileSize(file.size),
+                Backlog: this.cachedEvents.length,
                 Progress: '100%',
                 'Total Lines': this.totalLines,
                 'Wall Time (ms)': total,
@@ -67,7 +93,24 @@ export class ReplayHandler extends BaseFileHandler {
 
     private async handleLines(lines: string[]) {
         const res = lines.map((line) => this.parser.parseLine(line));
-        emitter.emit('logEvents', res);
-        return res;
+        this.cachedEvents.push(...res);
+    }
+
+    private emitCachedEvents() {
+        if (!this.emissionTargetTime) {
+            this.emissionTargetTime = this.cachedEvents[0].time;
+        }
+
+        let boundaryIndex = this.cachedEvents.findIndex((e) => e.time > this.emissionTargetTime);
+        let spliceIndex = boundaryIndex === -1 ? this.cachedEvents.length : boundaryIndex;
+        const toEmit = this.cachedEvents.splice(0, spliceIndex - 1);
+
+        this.emissionTargetTime += REPLAY_INTERVAL * TIMESCALE;
+        emitter.emit('logDebug', { 'Target Time': new Date(this.emissionTargetTime).toLocaleTimeString() });
+
+        if (toEmit.length) {
+            emitter.emit('logDebug', { Backlog: this.cachedEvents.length });
+            this.emit(toEmit);
+        }
     }
 }

@@ -2,12 +2,13 @@ import { batch } from 'solid-js';
 import { LogStates } from '../../core/domain';
 import { wrapLog } from '../../lib/log';
 import type { StoreEnhancer } from '../domain';
-import { get } from 'idb-keyval';
+import { get, set } from 'idb-keyval';
 
 export interface LogActions {
     refreshPermissions(): Promise<void>;
     watchFolder(): Promise<void>;
     openFile(): Promise<void>;
+    stop(): Promise<void>;
 }
 export interface LogState {
     state: LogStates;
@@ -15,6 +16,7 @@ export interface LogState {
     startTime: number;
     readTime: number;
     lines: any[];
+    stats: any;
     debug: Record<string, any[]>;
 }
 
@@ -25,6 +27,7 @@ export const initialState: LogState = {
     readTime: 0,
     lines: [],
     debug: {},
+    stats: {},
 };
 
 export const createLogStore: StoreEnhancer = function (worker, actions, state, setState) {
@@ -53,10 +56,12 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
             handle = await window.showDirectoryPicker();
 
             if (handle) {
+                set('dirHandle', handle);
                 await worker.watchDirectory(handle as any);
             }
         },
         openFile: async () => {
+            set('dirHandle', null);
             let handle: FileSystemHandle | undefined;
             const supportsFS = 'showDirectoryPicker' in window;
             if (!supportsFS) {
@@ -70,6 +75,10 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
                 setState('log', 'readTime', 0);
                 await worker.readFile(handle as any);
             }
+        },
+        stop: async () => {
+            set('dirHandle', null);
+            await worker.stop();
         },
     };
 
@@ -103,5 +112,8 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
                 });
             }
         });
+    });
+    worker.on('stats', (stats) => {
+        setState('log', 'stats', stats);
     });
 };

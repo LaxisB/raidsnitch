@@ -1,19 +1,26 @@
 export class Stack {
     private values: any[] = [[]];
 
-    pushValue(val: any) {
-        if (this.values.length) {
-            this.values[0].push(val);
-        }
+    addVal(val: any) {
+        this.head.push(val);
     }
-    addLayer(val: any[] = []) {
-        this.values.unshift(val);
+    addLayer() {
+        this.values.push([]);
     }
-    popLayer() {
-        return this.values.pop() ?? [];
+    collapseLayer() {
+        const head = this.values.pop();
+        this.addVal(head);
+    }
+
+    pull() {
+        return this;
     }
 
     get value() {
-        return this.values;
+        return this.values[0];
+    }
+
+    get head() {
+        return this.values[this.values.length - 1];
     }
 }

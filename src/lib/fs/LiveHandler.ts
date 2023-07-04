@@ -73,7 +73,7 @@ export class LiveHandler extends BaseFileHandler {
 
     async handleLines(lines: string[]) {
         const events = lines.map((line) => this.parser.parseLine(line));
-        emitter.emit('logEvents', events);
+        this.emit(events);
         return events;
     }
 }

@@ -1,10 +1,14 @@
 import { FileHandler } from '../../core/domain';
+import { emitter } from '../../core/emitter';
+import { LogLine } from '../parser';
 
 export class BaseFileHandler implements FileHandler {
     doStop = false;
     pendingLoop: number | undefined;
 
     partial = '';
+
+    constructor(private snitch: (lines: LogLine[]) => void) {}
 
     readText(text?: string) {
         if (!text) {
@@ -28,5 +32,14 @@ export class BaseFileHandler implements FileHandler {
 
     schedule(fn: () => void) {
         this.pendingLoop = requestAnimationFrame(() => fn());
+    }
+
+    emit(lines?: LogLine[]) {
+        if (!lines) {
+            return;
+        }
+
+        emitter.emit('logEvents', lines);
+        this.snitch(lines);
     }
 }
