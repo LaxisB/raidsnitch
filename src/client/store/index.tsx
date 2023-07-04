@@ -2,7 +2,6 @@ import { ParentProps, createContext, createSignal, useContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { getWorker } from './worker';
 import { initialState as uiState, createUiStore } from './createUiStore';
-import { initialState as fsState, createFsStore } from './createFsStore';
 import { initialState as logState, createLogStore } from './createLogStore';
 import { ClientActions, ClientState } from '../domain';
 
@@ -11,13 +10,11 @@ export function Provider(props: ParentProps) {
     const worker = getWorker();
     const [state, setState] = createStore<ClientState>({
         ui: uiState,
-        fs: fsState,
         log: logState,
         ready: false,
     });
     const actions = {} as any;
     createUiStore(worker, actions, state, setState);
-    createFsStore(worker, actions, state, setState);
     createLogStore(worker, actions, state, setState);
 
     worker.restore().then(() => setState('ready', true));

@@ -6,9 +6,14 @@ export default () => {
     const [_, actions] = useStore();
     return (
         <Layout centered>
-            <h1>Select your Log dir</h1>
-            <Button cta primary onclick={actions.fs.openFile}>
-                select
+            <Button cta primary onclick={actions.log.watchFolder}>
+                set log dir
+            </Button>
+            <br />
+            or
+            <br />
+            <Button cta onclick={actions.log.openFile}>
+                select File
             </Button>
         </Layout>
     );

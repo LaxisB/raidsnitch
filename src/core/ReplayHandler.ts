@@ -60,7 +60,7 @@ export class ReplayHandler implements FileHandler {
                 Size: formatFileSize(file.size),
                 Progress: '100%',
                 'Total Lines': this.totalLines,
-                'Total Parse Time (ms)': total,
+                'Wall Time (ms)': total,
                 'Line Parse Time avg (ms)': total / this.totalLines,
             });
             emitter.emit('logDone', true);

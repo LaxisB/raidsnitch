@@ -6,7 +6,7 @@ export default () => {
     const [_, actions] = useStore();
     return (
         <Layout centered>
-            <Button cta primary onclick={actions.fs.refreshPermissions}>
+            <Button cta primary onclick={actions.log.refreshPermissions}>
                 reauth
             </Button>
         </Layout>

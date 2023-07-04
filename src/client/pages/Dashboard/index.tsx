@@ -8,7 +8,7 @@ export default () => {
 
     return (
         <div class={classes.dashboard}>
-            {store.ui.showLog ? <Log class={classes.frameLog} /> : null}
+            {store.log.isReading === false ? <Log class={classes.frameLog} /> : null}
             <Debug class={`${classes.frame} ${classes.frameDebug}`} />
         </div>
     );

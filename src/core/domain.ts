@@ -3,6 +3,7 @@ import type { DirWatcher } from './DirWatcher';
 export interface CoreInterface {
     restore: () => Promise<void>;
     watchDirectory(handle?: FileSystemDirectoryHandle): Promise<void>;
+    readFile(handle: FileSystemFileHandle): Promise<void>;
     stop(): void;
 }
 

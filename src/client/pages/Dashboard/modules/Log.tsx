@@ -12,5 +12,9 @@ export default function (props: any) {
         ref.textContent = addedLines;
     });
 
-    return <pre class={props.class} ref={(el) => (ref = el)}></pre>;
+    return (
+        <div>
+            <pre class={props.class} ref={(el) => (ref = el)}></pre>
+        </div>
+    );
 }

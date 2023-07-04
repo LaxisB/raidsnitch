@@ -6,13 +6,11 @@ export interface UiActions {}
 export interface UiState {
     viewstate: ClientUiViewstate;
     loading: number;
-    showLog: boolean;
 }
 
-export const initialState: ClientState['ui'] = {
+export const initialState: UiState = {
     viewstate: 'initial',
     loading: 0,
-    showLog: false,
 };
 
 export const createUiStore: StoreEnhancer = function (worker, actions, state, setState) {
@@ -31,8 +29,5 @@ export const createUiStore: StoreEnhancer = function (worker, actions, state, se
                 setState('ui', 'viewstate', 'ready');
                 break;
         }
-    });
-    worker.on('logDone', (done) => {
-        setState('ui', 'showLog', done);
     });
 };
