@@ -43,10 +43,7 @@ export class LiveHandler extends BaseFileHandler {
 
         if (file.size == this.offset) {
             this.noDataReadCount = Math.min(10, this.noDataReadCount + 1);
-            log.debug('No new data');
-
-            // exponential backoff from 2 -> 1024 ms
-            const timeout = 2 ** this.noDataReadCount;
+            const timeout = this.noDataReadCount < 5 ? 100 : 100 * this.noDataReadCount;
             await sleep(timeout);
             this.schedule(() => this.loopRead());
             return;
