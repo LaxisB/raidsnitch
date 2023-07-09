@@ -55,6 +55,7 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
         ) {
             if (event.baseParams.sourceGuid === '0000000000000000') return;
             let entity = state.entities[event.baseParams.sourceGuid];
+            if (!entity) return;
             while (entity.ownerGuid) {
                 entity = state.entities[entity.ownerGuid];
             }
