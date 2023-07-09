@@ -60,13 +60,13 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
                 entity = state.entities[entity.ownerGuid];
             }
             if (!entity || entity.guid?.startsWith('Player') === false) return;
-            if (state.dps.encounter) {
+            if (state.dps.encounter?.active) {
                 state.dps.encounter.timeLast = event.time;
                 const entityState = state.dps.encounter.entities[entity.guid] ?? { damageTotal: 0 };
                 entityState.damageTotal += event.suffixes![0];
                 state.dps.encounter!.entities[entity.guid] = entityState;
             }
-            if (state.dps.challengeMode) {
+            if (state.dps.challengeMode?.active) {
                 state.dps.challengeMode.timeLast = event.time;
                 const entityState = state.dps.challengeMode.entities[entity.guid] ?? { damageTotal: 0 };
                 entityState.damageTotal += event.suffixes![0];
