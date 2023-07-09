@@ -1,3 +1,5 @@
+import { State } from '../lib/snitch';
+
 export interface CoreInterface {
     restore: () => Promise<void>;
     watchDirectory(handle?: FileSystemDirectoryHandle): Promise<void>;
@@ -9,7 +11,7 @@ export interface CoreEvents {
     dirWatcherState: LogStates;
     logDebug: Record<string, any>;
     logEvents: any[];
-    stats: any;
+    stats: State;
     logDone: boolean;
 }
 

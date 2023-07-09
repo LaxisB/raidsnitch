@@ -8,10 +8,10 @@ import { sleep } from '../utils';
 const log = wrapLog('replay_handler');
 
 // how often to emit cached events
-const REPLAY_INTERVAL = 200;
+const REPLAY_INTERVAL = 50;
 
 // replay speed
-const TIMESCALE = 10;
+let TIMESCALE = 10;
 
 export class ReplayHandler extends BaseFileHandler {
     private readTime = 0;
@@ -27,6 +27,8 @@ export class ReplayHandler extends BaseFileHandler {
     async handleFileChange(handle: FileSystemFileHandle) {
         const file = await handle.getFile();
 
+        TIMESCALE = 10;
+
         this.readTime = Date.now();
         this.startTime = this.readTime;
         this.totalLines = 0;
@@ -39,8 +41,8 @@ export class ReplayHandler extends BaseFileHandler {
     }
 
     async close() {
-        this.cachedEventsInterval && clearInterval(this.cachedEventsInterval);
-        return await super.close();
+        await super.close();
+        clearInterval(this.cachedEventsInterval);
     }
 
     private async loopRead(file: File, reader: ReadableStreamDefaultReader<string>) {
@@ -98,6 +100,10 @@ export class ReplayHandler extends BaseFileHandler {
     }
 
     private emitCachedEvents() {
+        if (this.doStop) {
+            clearInterval(this.cachedEventsInterval);
+            return;
+        }
         if (!this.emissionTargetTime) {
             this.emissionTargetTime = this.cachedEvents[0].time;
         }
@@ -105,6 +111,13 @@ export class ReplayHandler extends BaseFileHandler {
         let boundaryIndex = this.cachedEvents.findIndex((e) => e.time > this.emissionTargetTime);
         let spliceIndex = boundaryIndex === -1 ? this.cachedEvents.length : boundaryIndex;
         const toEmit = this.cachedEvents.splice(0, spliceIndex - 1);
+
+        if (toEmit.some((e) => e.event === 'ENCOUNTER_START')) {
+            TIMESCALE = 1;
+        }
+        if (toEmit.some((e) => e.event === 'ENCOUNTER_END')) {
+            TIMESCALE = 10;
+        }
 
         this.emissionTargetTime += REPLAY_INTERVAL * TIMESCALE;
         emitter.emit('logDebug', { 'Target Time': new Date(this.emissionTargetTime).toLocaleTimeString() });

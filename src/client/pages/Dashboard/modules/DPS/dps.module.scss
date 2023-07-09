@@ -1,0 +1,36 @@
+.entry {
+    position: relative;
+    display: flex;
+    width: 100%;
+    background-color: var(--app-background);
+    overflow: hidden;
+    margin-bottom: 0.2em;
+    padding: 0.2em;
+    font-size: 0.875em;
+
+    &::before {
+        content: '';
+        position: absolute;
+        display: block;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: -100%;
+        transform: translateX(var(--val));
+        background-color: rgba(200, 200, 200, 0.2);
+        z-index: inherit;
+    }
+
+    &--name {
+        position: relative;
+        flex: 1 0 auto;
+        z-index: 1px;
+    }
+    &--value {
+        position: relative;
+        text-align: right;
+        font-weight: bold;
+        flex: 1;
+        z-index: 1;
+    }
+}

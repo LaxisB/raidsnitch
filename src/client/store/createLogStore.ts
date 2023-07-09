@@ -3,6 +3,8 @@ import { LogStates } from '../../core/domain';
 import { wrapLog } from '../../lib/log';
 import type { StoreEnhancer } from '../domain';
 import { get, set } from 'idb-keyval';
+import { State } from '../../lib/snitch';
+import { reconcile } from 'solid-js/store';
 
 export interface LogActions {
     refreshPermissions(): Promise<void>;
@@ -15,8 +17,7 @@ export interface LogState {
     isReading: boolean;
     startTime: number;
     readTime: number;
-    lines: any[];
-    stats: any;
+    stats?: State;
     debug: Record<string, any[]>;
 }
 
@@ -25,9 +26,7 @@ export const initialState: LogState = {
     isReading: false,
     startTime: 0,
     readTime: 0,
-    lines: [],
     debug: {},
-    stats: {},
 };
 
 export const createLogStore: StoreEnhancer = function (worker, actions, state, setState) {
@@ -82,10 +81,6 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
         },
     };
 
-    worker.on('logEvents', (lines) => {
-        setState('log', 'readTime', Date.now() - state.log.startTime);
-        setState('log', 'lines', (oldLines) => [...oldLines, ...lines].slice(-100));
-    });
     worker.on('dirWatcherState', (state) => {
         log.debug('new fs state', state);
         setState('log', 'state', state);
@@ -114,6 +109,10 @@ export const createLogStore: StoreEnhancer = function (worker, actions, state, s
         });
     });
     worker.on('stats', (stats) => {
-        setState('log', 'stats', stats);
+        if (!state.log.stats) {
+            setState('log', 'stats', stats);
+            return;
+        }
+        setState('log', 'stats', reconcile(stats, { merge: true }));
     });
 };

@@ -1,4 +1,3 @@
-import { LogEvent } from '../snitch/domain';
 import { Stack } from './Stack';
 
 const LIST_START = ['[', '('];
@@ -8,7 +7,15 @@ const SEPARATORS = [',', ...LIST_START, ...LIST_END];
 type LogBottomValues = null | number | string;
 type LogValues = LogBottomValues | LogValues[];
 
-interface ErrorLine {
+export interface DataLine {
+    time: 0;
+    offset: number;
+    event: string;
+    payload: LogValues[];
+    line: string;
+}
+
+export interface ErrorLine {
     time: 0;
     offset: number;
     event: null;
@@ -16,7 +23,7 @@ interface ErrorLine {
     line: string;
 }
 
-export type LogLine = LogEvent | ErrorLine;
+export type LogLine = DataLine | ErrorLine;
 
 export class Parser {
     private offset = 0;
@@ -78,13 +85,13 @@ export class Parser {
         // EOL :::: exit branch
         // this is the only
         // we're checking for length to avoid matching long strings
-        if (!rest || (rest.length < 2 && /^\w*$/.test(rest))) {
+        if (!rest || (rest.length < 2 && /^\s*$/.test(rest))) {
             return stack.value;
         }
         // nil val
         if (rest.startsWith('nil')) {
             stack.addVal(null);
-            return this._parsePayload(rest.slice(3), stack);
+            return this._parsePayload(rest.slice(4), stack);
         }
         // flags
         if (rest.startsWith('0x')) {
@@ -112,6 +119,12 @@ export class Parser {
             const rest2 = rest.slice(1).replace(/^,/, '');
             return this._parsePayload(rest2, stack);
         }
+        // special case: a null guid
+        if (rest.startsWith('0000000000000000')) {
+            const [val, rest2] = this.splitAtSeparator(rest);
+            stack.addVal(val);
+            return this._parsePayload(rest2, stack);
+        }
         // value (int/float/const)
         const [val, rest2] = this.splitAtSeparator(rest);
         stack.addVal(this.parsePrimitive(val));
@@ -129,7 +142,7 @@ export class Parser {
     }
 
     private parsePrimitive(val: string) {
-        const isNum = /^\d+(\.\d+)?$/.test(val);
+        const isNum = /^-?\d+(\.\d+)?$/.test(val);
         return isNum ? Number.parseFloat(val) : val;
     }
 
@@ -139,7 +152,7 @@ export class Parser {
     }
     splitAtSeparator(string: string) {
         const offsets = SEPARATORS.map((sep) => string.indexOf(sep)).filter((offset) => offset > -1);
-        const min = Math.min(...offsets);
+        const min = Math.min(string.length, ...offsets);
         const val = string.slice(0, min);
         // trim leading comma if present. we don't need it for parsing
         const rest = string[min] === ',' ? string.slice(min + 1) : string.slice(min);

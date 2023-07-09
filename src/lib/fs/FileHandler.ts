@@ -8,7 +8,7 @@ export class BaseFileHandler implements FileHandler {
 
     partial = '';
 
-    constructor(private snitch: (lines: LogLine[]) => void) {}
+    constructor(private handlerCb: (lines: LogLine[]) => void) {}
 
     readText(text?: string) {
         if (!text) {
@@ -39,7 +39,6 @@ export class BaseFileHandler implements FileHandler {
             return;
         }
 
-        emitter.emit('logEvents', lines);
-        this.snitch(lines);
+        this.handlerCb(lines);
     }
 }

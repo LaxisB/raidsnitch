@@ -1,0 +1,9 @@
+- [ ] incrementally parse events instead of splitting strings in file handlers
+- [x] refactor HighLevelEvent
+  - [ ] implement remaining types
+- [ ] clean up snitch state & handlers
+  - [x] decide on handler concept
+  - [ ] clean dps handler
+- [ ] write proxy to intercept state mutations for leaner messages
+- [ ] dev-only assertions in parser
+- [ ] make replay dev only
