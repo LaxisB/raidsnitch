@@ -45,7 +45,7 @@ export default (props: DpsProps) => {
         }, {} as Record<string, { name: string; guid: string; total: number; dps: number }>);
 
         const dpsArray = Object.values(dpsValues)
-            .filter((x) => x.guid.startsWith('Player-'))
+            .filter((x) => x.guid?.startsWith('Player-'))
             .sort((a, b) => b.dps - a.dps);
 
         setDps({ dps: dpsArray, topDps: dpsArray[0]?.dps ?? 1, deltaTime });
