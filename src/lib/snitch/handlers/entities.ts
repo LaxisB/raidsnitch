@@ -30,6 +30,10 @@ export const createEntitiesHandler: CreateHandler<EntitiesState> = () => {
     let initialState: EntitiesState = {};
 
     function handleEvent(e: WowEvent, state: State) {
+        if (casts.eventIsZoneChange(e)) {
+            state.entities = {};
+            return;
+        }
         if (e.name === 'UNIT_DIED' || e.name === 'UNIT_DESTROYED' || e.name === 'UNIT_DISSIPATES') {
             const guid = e.baseParams.destGuid;
             if (guid && guid != NULL_GUID) {

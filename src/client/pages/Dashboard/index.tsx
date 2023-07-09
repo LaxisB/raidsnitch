@@ -9,10 +9,10 @@ export default () => {
     return (
         <div class={classes.dashboard}>
             <div class={`${classes.frame} ${classes.frameStats}`}>
+                <header>zone</header>
+                <pre>{JSON.stringify(state.log.stats?.zone, null, 4)}</pre>
                 <header>encounter</header>
                 <pre>{JSON.stringify(state.log.stats?.encounter, null, 4)}</pre>
-                <header>dps</header>
-                <pre>{JSON.stringify(state.log.stats?.dps, null, 4)}</pre>
                 <header>entities</header>
                 <pre>{JSON.stringify(state.log.stats?.entities, null, 4)}</pre>
             </div>
