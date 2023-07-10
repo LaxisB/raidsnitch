@@ -21,8 +21,8 @@ interface FileSystemReadWriteOptions {
     at: number;
 }
 
-interface AsyncIterator<T> {
-    [Symbol.asyncIterator](): { next(): Promise<{ value: T; done: boolean }> };
+interface AsyncIterator<T, TReturn, TNext> {
+    [Symbol.asyncIterator](): any;
 }
 
 interface FileSystemHandle {
