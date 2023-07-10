@@ -1,8 +1,8 @@
 import { wrapLog } from '../log';
-import { Parser } from '../parser';
 import { sleep } from '../utils';
 import { emitter } from '../../core/emitter';
 import { BaseFileHandler } from './FileHandler';
+import { Parser, createParser } from '../parser';
 
 const log = wrapLog('live_log_handler');
 
@@ -24,7 +24,7 @@ export class LiveHandler extends BaseFileHandler {
         this.offset = 0;
         this.handle = handle;
         this.readTime = Date.now();
-        this.parser = new Parser(file.lastModified);
+        this.parser = createParser(file.lastModified);
         this.loopRead();
     }
 

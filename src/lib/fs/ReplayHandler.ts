@@ -1,7 +1,7 @@
 import { formatFileSize } from '../format';
 import { wrapLog } from '../log';
 import { emitter } from '../../core/emitter';
-import { LogLine, Parser } from '../parser';
+import { LogLine, Parser, createParser } from '../parser';
 import { BaseFileHandler } from './FileHandler';
 import { sleep } from '../utils';
 
@@ -32,7 +32,7 @@ export class ReplayHandler extends BaseFileHandler {
         this.readTime = Date.now();
         this.startTime = this.readTime;
         this.totalLines = 0;
-        this.parser = new Parser(file.lastModified);
+        this.parser = createParser(file.lastModified);
         emitter.emit('logDone', false);
 
         const reader = file.stream().pipeThrough(new TextDecoderStream()).getReader();
