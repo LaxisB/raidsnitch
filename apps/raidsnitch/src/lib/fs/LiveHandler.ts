@@ -1,5 +1,5 @@
-import { wrapLog } from '../log';
-import { sleep } from '../utils';
+import { wrapLog } from '@raidsnitch/shared/log';
+import { sleep } from '@raidsnitch/shared/utils';
 import { emitter } from '../../core/emitter';
 import { BaseFileHandler } from './FileHandler';
 import { Parser, createParser } from '@raidsnitch/logparser';

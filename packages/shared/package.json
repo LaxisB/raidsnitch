@@ -1,0 +1,40 @@
+{
+  "name": "@raidsnitch/shared",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./log": {
+      "import": "./dist/log.js",
+      "types": "./dist/log.d.ts"
+    },
+    "./emitter": {
+      "import": "./dist/emitter.js",
+      "types": "./dist/emitter.d.ts"
+    },
+    "./rpc": {
+      "import": "./dist/rpc.js",
+      "types": "./dist/rpc.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils.js",
+      "types": "./dist/utils.d.ts"
+    },
+    "./format": {
+      "import": "./dist/format.js",
+      "types": "./dist/format.d.ts"
+    }
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -p . --watch"
+  },
+  "license": "MIT"
+}

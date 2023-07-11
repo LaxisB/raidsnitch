@@ -1,5 +1,5 @@
-import { RpcEvent, RpcRequest, setupRpcHandlers } from '../lib/rpc';
-import { wrapLog } from '../lib/log';
+import { RpcEvent, RpcRequest, setupRpcHandlers } from '@raidsnitch/shared/rpc';
+import { wrapLog } from '@raidsnitch/shared/log';
 import { emitter } from './emitter';
 import { handlers } from './api';
 

@@ -1,4 +1,4 @@
-import { State } from '../lib/snitch';
+import type { State } from '@raidsnitch/snitch';
 
 export interface CoreInterface {
   restore: () => Promise<void>;

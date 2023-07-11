@@ -1,9 +1,9 @@
 import { batch } from 'solid-js';
 import { LogStates } from '../../core/domain';
-import { wrapLog } from '../../lib/log';
+import { wrapLog } from '@raidsnitch/shared/log';
 import type { StoreEnhancer } from '../domain';
 import { get, set } from 'idb-keyval';
-import { State } from '../../lib/snitch';
+import type { State } from '@raidsnitch/snitch';
 import { reconcile } from 'solid-js/store';
 
 export interface LogActions {

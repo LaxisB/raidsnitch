@@ -1,9 +1,9 @@
-import { SetStoreFunction } from 'solid-js/store';
-import { CoreEvents, CoreInterface, LogStates } from '../core/domain';
-import { Emitter } from '../lib/emitter';
-import { AsyncClient } from '../lib/rpc';
-import type { UiActions, UiState } from './store/createUiStore';
+import { Emitter } from '@raidsnitch/shared/emitter';
+import type { AsyncClient } from '@raidsnitch/shared/rpc';
+import type { SetStoreFunction } from 'solid-js/store';
+import type { CoreEvents, CoreInterface } from '../core/domain';
 import type { LogActions, LogState } from './store/createLogStore';
+import type { UiActions, UiState } from './store/createUiStore';
 
 export interface ClientState {
   ui: UiState;

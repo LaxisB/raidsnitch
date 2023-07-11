@@ -1,6 +1,6 @@
 import { get, set } from 'idb-keyval';
-import { FileHandler, LogStates } from '../../core/domain';
-import { wrapLog } from '../log';
+import type { FileHandler, LogStates } from '../../core/domain';
+import { wrapLog } from '@raidsnitch/shared/log';
 import { emitter } from '../../core/emitter';
 
 const log = wrapLog('dir_watcher');

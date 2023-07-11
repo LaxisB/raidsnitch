@@ -20,6 +20,9 @@ importers:
       '@raidsnitch/logparser':
         specifier: workspace:^
         version: link:../../packages/logparser
+      '@raidsnitch/shared':
+        specifier: workspace:^
+        version: link:../../packages/shared
       '@raidsnitch/snitch':
         specifier: workspace:^
         version: link:../../packages/snitch
@@ -53,6 +56,12 @@ importers:
         version: 2.7.0(solid-js@1.7.6)(vite@4.3.9)
 
   packages/logparser:
+    devDependencies:
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
+  packages/shared:
     devDependencies:
       typescript:
         specifier: ^5.1.6

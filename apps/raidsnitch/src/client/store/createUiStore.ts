@@ -1,5 +1,5 @@
 import { LogStates } from '../../core/domain';
-import type { ClientState, StoreEnhancer } from '../domain';
+import type { StoreEnhancer } from '../domain';
 
 export type ClientUiViewstate = 'initial' | 'need_file' | 'need_permisison' | 'ready';
 export interface UiActions {}
