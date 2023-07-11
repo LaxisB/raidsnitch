@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@raidsnitch/logparser": "workspace:^",
+    "@raidsnitch/snitch": "workspace:^",
     "idb-keyval": "^6.2.1",
     "solid-js": "^1.7.6"
   }

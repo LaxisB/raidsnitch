@@ -20,6 +20,9 @@ importers:
       '@raidsnitch/logparser':
         specifier: workspace:^
         version: link:../../packages/logparser
+      '@raidsnitch/snitch':
+        specifier: workspace:^
+        version: link:../../packages/snitch
       idb-keyval:
         specifier: ^6.2.1
         version: 6.2.1
@@ -51,6 +54,15 @@ importers:
 
   packages/logparser:
     devDependencies:
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
+  packages/snitch:
+    devDependencies:
+      '@raidsnitch/logparser':
+        specifier: workspace:^
+        version: link:../logparser
       typescript:
         specifier: ^5.1.6
         version: 5.1.6

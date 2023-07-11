@@ -3,7 +3,7 @@ import { DirWatcher } from '../lib/fs/DirWatcher';
 import { ReplayHandler } from '../lib/fs/ReplayHandler';
 import { LiveHandler } from '../lib/fs/LiveHandler';
 import { emitter } from './emitter';
-import { Snitch, initialize as initializeSnitch } from '../lib/snitch';
+import { Snitch, initialize as initializeSnitch } from '@raidsnitch/snitch';
 
 let dirWatcher: DirWatcher | null = null;
 let fileWatcher: ReplayHandler | null = null;
@@ -14,7 +14,7 @@ function reset() {
   fileWatcher?.close();
   dirWatcher = null;
   fileWatcher = null;
-  snitch = initializeSnitch();
+  snitch = initializeSnitch((stats) => emitter.emit('stats', stats));
 }
 
 export const handlers: CoreInterface = {
