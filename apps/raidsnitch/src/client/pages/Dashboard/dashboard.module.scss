@@ -1,0 +1,33 @@
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  grid-gap: 1em;
+  height: 100%;
+  position: relative;
+}
+
+.frame {
+  padding: 0.5em;
+  border: 1px solid var(--app-foreground);
+  background: var(--app-background);
+
+  &--debug {
+    grid-column: 9/13;
+    grid-row: 1 / span 1;
+  }
+  &--stats {
+    grid-column: 1/ 9;
+    grid-row: span 6;
+    overflow: auto;
+  }
+
+  &--damage {
+    grid-column: 9/13;
+    grid-row: 2;
+  }
+  &--healing {
+    grid-column: 9/13;
+    grid-row: 3;
+  }
+}

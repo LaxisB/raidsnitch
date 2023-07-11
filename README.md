@@ -7,4 +7,3 @@ Browser Support:
 in short: evergreen chromium-based browsers, such as chrome, edge or opera
 
 https://caniuse.com/mdn-api_window_showdirectorypicker
-https://caniuse.com/mdn-api_filesystemfilehandle_createsyncaccesshandle
