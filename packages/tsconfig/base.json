@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Default",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "strict": true,
+    "declaration": true,
+    "declarationMap": true,
+    "composite": false
+  },
+  "exclude": ["node_modules", "dist"]
+}
