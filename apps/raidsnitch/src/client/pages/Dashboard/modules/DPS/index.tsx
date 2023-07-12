@@ -1,7 +1,7 @@
-import { For, createComputed, createEffect, createSignal } from 'solid-js';
+import { For, createComputed } from 'solid-js';
+import { createStore } from 'solid-js/store';
 import { useStore } from '../../../../store';
 import classes from './dps.module.scss';
-import { createStore, reconcile } from 'solid-js/store';
 
 interface DpsProps {
   mode: 'encounter' | 'challengeMode';

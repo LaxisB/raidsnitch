@@ -1,7 +1,7 @@
-import { RpcEvent, RpcRequest, setupRpcHandlers } from '@raidsnitch/shared/rpc';
 import { wrapLog } from '@raidsnitch/shared/log';
-import { emitter } from './emitter';
+import { RpcEvent, RpcRequest, setupRpcHandlers } from '@raidsnitch/shared/rpc';
 import { handlers } from './api';
+import { emitter } from './emitter';
 
 let log = wrapLog('core worker');
 

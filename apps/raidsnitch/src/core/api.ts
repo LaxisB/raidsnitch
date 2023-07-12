@@ -1,9 +1,9 @@
-import { CoreInterface, LogStates } from './domain';
-import { DirWatcher } from '../lib/fs/DirWatcher';
-import { ReplayHandler } from '../lib/fs/ReplayHandler';
-import { LiveHandler } from '../lib/fs/LiveHandler';
-import { emitter } from './emitter';
 import { Snitch, initialize as initializeSnitch } from '@raidsnitch/snitch';
+import { DirWatcher } from '../lib/fs/DirWatcher';
+import { LiveHandler } from '../lib/fs/LiveHandler';
+import { ReplayHandler } from '../lib/fs/ReplayHandler';
+import { CoreInterface, LogStates } from './domain';
+import { emitter } from './emitter';
 
 let dirWatcher: DirWatcher | null = null;
 let fileWatcher: ReplayHandler | null = null;

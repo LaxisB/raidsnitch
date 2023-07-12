@@ -1,9 +1,9 @@
+import { LogLine, Parser, createParser } from '@raidsnitch/logparser';
 import { formatFileSize } from '@raidsnitch/shared/format';
 import { wrapLog } from '@raidsnitch/shared/log';
-import { emitter } from '../../core/emitter';
-import { LogLine, Parser, createParser } from '@raidsnitch/logparser';
-import { BaseFileHandler } from './FileHandler';
 import { sleep } from '@raidsnitch/shared/utils';
+import { emitter } from '../../core/emitter';
+import { BaseFileHandler } from './FileHandler';
 
 const log = wrapLog('replay_handler');
 

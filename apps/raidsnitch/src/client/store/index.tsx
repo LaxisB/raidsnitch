@@ -1,9 +1,9 @@
-import { ParentProps, createContext, createSignal, useContext } from 'solid-js';
+import { ParentProps, createContext, useContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { getWorker } from './worker';
-import { initialState as uiState, createUiStore } from './createUiStore';
-import { initialState as logState, createLogStore } from './createLogStore';
 import { ClientActions, ClientState } from '../domain';
+import { createLogStore, initialState as logState } from './createLogStore';
+import { createUiStore, initialState as uiState } from './createUiStore';
+import { getWorker } from './worker';
 
 const StoreContext = createContext<[ClientState, ClientActions]>();
 export function Provider(props: ParentProps) {

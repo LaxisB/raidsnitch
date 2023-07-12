@@ -1,5 +1,5 @@
-import { FileHandler } from '../../core/domain';
 import { LogLine } from '@raidsnitch/logparser';
+import { FileHandler } from '../../core/domain';
 
 export class BaseFileHandler implements FileHandler {
     doStop = false;

@@ -1,6 +1,6 @@
-import { RpcResponse, RpcEvent, createNaiveClient } from '@raidsnitch/shared/rpc';
 import { Emitter } from '@raidsnitch/shared/emitter';
 import { wrapLog } from '@raidsnitch/shared/log';
+import { RpcEvent, RpcResponse, createNaiveClient } from '@raidsnitch/shared/rpc';
 import type { CoreEvents, CoreInterface } from '../../core/domain';
 import type { ClientWorker } from '../domain';
 

@@ -1,7 +1,7 @@
-import { createSignal, createEffect, For } from 'solid-js';
+import { For, createEffect, createSignal } from 'solid-js';
+import Sparkline from '../../../../components/Sparkline';
 import { useStore } from '../../../../store';
 import classes from './debug.module.scss';
-import Sparkline from '../../../../components/Sparkline';
 
 interface DebugProps {
   class?: string;

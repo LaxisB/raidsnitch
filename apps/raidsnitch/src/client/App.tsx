@@ -1,10 +1,10 @@
+import { Component, Match, Show, Switch } from 'solid-js';
 import './App.scss';
-import { Component, Show, Switch, Match } from 'solid-js';
-import { useStore } from './store';
-import FileSelect from './pages/FileSelect';
-import Reauth from './pages/ReAuth';
 import Theme from './components/Theme';
 import Dashboard from './pages/Dashboard';
+import FileSelect from './pages/FileSelect';
+import Reauth from './pages/ReAuth';
+import { useStore } from './store';
 
 const App: Component = () => {
   const [state] = useStore();

@@ -1,10 +1,10 @@
-import { batch } from 'solid-js';
-import { LogStates } from '../../core/domain';
 import { wrapLog } from '@raidsnitch/shared/log';
-import type { StoreEnhancer } from '../domain';
-import { get, set } from 'idb-keyval';
 import type { State } from '@raidsnitch/snitch';
+import { get, set } from 'idb-keyval';
+import { batch } from 'solid-js';
 import { reconcile } from 'solid-js/store';
+import { LogStates } from '../../core/domain';
+import type { StoreEnhancer } from '../domain';
 
 export interface LogActions {
   refreshPermissions(): Promise<void>;

@@ -1,8 +1,8 @@
+import { Parser, createParser } from '@raidsnitch/logparser';
 import { wrapLog } from '@raidsnitch/shared/log';
 import { sleep } from '@raidsnitch/shared/utils';
 import { emitter } from '../../core/emitter';
 import { BaseFileHandler } from './FileHandler';
-import { Parser, createParser } from '@raidsnitch/logparser';
 
 const log = wrapLog('live_log_handler');
 
