@@ -1,4 +1,4 @@
-import { DataLine } from '@raidsnitch/logparser';
+import { DataLine } from '../lineParser';
 import { EntityEvent, EventName, type AdvancedParams, type EventBaseParams, type GlobalEvents, type WowEvent } from './domain';
 
 const NONSTANDARD_EVENTS: string[] = [

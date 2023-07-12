@@ -1,5 +1,5 @@
+import { WowEvent } from '@raidsnitch/parser';
 import { State } from '..';
-import { WowEvent } from '../events';
 
 export type CreateHandler<T> = () => { initialState: T; handleEvent: HandlerCallback };
 export type HandlerCallback = (event: WowEvent, state: State) => void;

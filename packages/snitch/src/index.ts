@@ -1,5 +1,4 @@
-import { LogLine } from '@raidsnitch/logparser';
-import { parser } from './events';
+import { WowEvent } from '@raidsnitch/parser';
 import { createDpsHandler } from './handlers/dps';
 import { createEncounterHandler } from './handlers/encounter';
 import { createEntitiesHandler } from './handlers/entities';
@@ -8,7 +7,7 @@ import { createZoneHandler } from './handlers/zone';
 export type State = ReturnType<typeof initialize>['state'];
 export interface Snitch {
   state: State;
-  handleEvents(events: LogLine[]): void;
+  handleEvents(events: WowEvent[]): void;
 }
 
 export function initialize(handleStats: (stats: State) => void) {
@@ -27,14 +26,12 @@ export function initialize(handleStats: (stats: State) => void) {
 
   const handlers = [encounters.handleEvent, zone.handleEvent, entities.handleEvent, dps.handleEvent];
 
-  function handleEvents(events: LogLine[]) {
-    events.forEach((line) => {
-      if (!line.event) return;
+  function handleEvents(events: WowEvent[]) {
+    events.forEach((event) => {
       if (refTime === -1) {
-        refTime = line.time;
+        refTime = event.time;
       }
-      const parsed = parser.parseAsEvent(line, refTime);
-      handlers.forEach((handler) => handler(parsed, state));
+      handlers.forEach((handler) => handler(event, state));
     });
 
     handleStats(state);

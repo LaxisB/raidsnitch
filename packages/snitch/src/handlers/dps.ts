@@ -1,5 +1,5 @@
+import { WowEvent, casts } from '@raidsnitch/parser';
 import type { State } from '..';
-import { WowEvent, casts } from '../events';
 import { CreateHandler } from './domain';
 
 export interface DpsGroup {

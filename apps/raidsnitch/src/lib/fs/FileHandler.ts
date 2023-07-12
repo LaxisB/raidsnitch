@@ -1,4 +1,4 @@
-import { LogLine } from '@raidsnitch/logparser';
+import { WowEvent } from '@raidsnitch/parser';
 import { FileHandler } from '../../core/domain';
 
 export class BaseFileHandler implements FileHandler {
@@ -7,7 +7,7 @@ export class BaseFileHandler implements FileHandler {
 
     partial = '';
 
-    constructor(private handlerCb: (lines: LogLine[]) => void) {}
+    constructor(private handlerCb: (lines: WowEvent[]) => void) {}
 
     readText(text?: string) {
         if (!text) {
@@ -33,7 +33,7 @@ export class BaseFileHandler implements FileHandler {
         this.pendingLoop = requestAnimationFrame(() => fn());
     }
 
-    emit(lines?: LogLine[]) {
+    emit(lines?: WowEvent[]) {
         if (!lines) {
             return;
         }

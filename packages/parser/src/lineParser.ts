@@ -26,15 +26,11 @@ export interface Parser {
   parseLine(line: string): LogLine;
 }
 
-const TIMESTAMP_MATCHER = new RegExp(/(\d{1,2})\/(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2}).(\d{1,3})/);
-export function createParser(referenceTime: number) {
+export function createLineParser(referenceTime: number) {
   let reftime = referenceTime;
   let offset = 0;
 
   return {
-    setReferenceTime: (time: number) => {
-      referenceTime = time;
-    },
     parseLine(line: string): LogLine {
       const [timeblock, rest] = line.split('  ');
       if (!timeblock || !rest) {
@@ -64,6 +60,8 @@ export function createParser(referenceTime: number) {
     },
   };
 }
+
+const TIMESTAMP_MATCHER = new RegExp(/(\d{1,2})\/(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2}).(\d{1,3})/);
 function parseTimeblock(timeBlock: string, reftime: number): number {
   const matches = TIMESTAMP_MATCHER.exec(timeBlock);
   const d = new Date(reftime);
@@ -81,6 +79,7 @@ function parsePayload(body: string) {
   const payload = _parsePayload(body, stack);
   return payload as LogValues[];
 }
+
 function _parsePayload(rest: string, stack: Stack): any[] {
   // EOL :::: exit branch
   // this is the only
@@ -88,11 +87,13 @@ function _parsePayload(rest: string, stack: Stack): any[] {
   if (!rest || (rest.length < 2 && /^\s*$/.test(rest))) {
     return stack.value();
   }
+
   // nil val
   if (rest.startsWith('nil')) {
     stack.addVal(null);
     return _parsePayload(rest.slice(4), stack);
   }
+
   // flags
   if (rest.startsWith('0x')) {
     const [val, rest2] = splitAtSeparator(rest);
@@ -100,6 +101,7 @@ function _parsePayload(rest: string, stack: Stack): any[] {
     stack.addVal(flags);
     return _parsePayload(rest2, stack);
   }
+
   // quoted string
   if (rest.startsWith('"')) {
     // assume that the char following the closing quote is a separator
@@ -108,6 +110,7 @@ function _parsePayload(rest: string, stack: Stack): any[] {
     stack.addVal(val.slice(0, -1).trim());
     return _parsePayload(rest2, stack);
   }
+
   // lists
   if (LIST_START.includes(rest[0])) {
     stack.addLayer();
@@ -119,12 +122,14 @@ function _parsePayload(rest: string, stack: Stack): any[] {
     const rest2 = rest.slice(1).replace(/^,/, '');
     return _parsePayload(rest2, stack);
   }
+
   // special case: a null guid
   if (rest.startsWith('0000000000000000')) {
     const [val, rest2] = splitAtSeparator(rest);
     stack.addVal(val);
     return _parsePayload(rest2, stack);
   }
+
   // value (int/float/const)
   const [val, rest2] = splitAtSeparator(rest);
   stack.addVal(parsePrimitive(val));

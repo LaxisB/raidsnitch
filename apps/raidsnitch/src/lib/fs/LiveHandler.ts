@@ -1,4 +1,4 @@
-import { Parser, createParser } from '@raidsnitch/logparser';
+import { createParser, Parser, WowEvent } from '@raidsnitch/parser';
 import { wrapLog } from '@raidsnitch/shared/log';
 import { sleep } from '@raidsnitch/shared/utils';
 import { emitter } from '../../core/emitter';
@@ -72,7 +72,8 @@ export class LiveHandler extends BaseFileHandler {
     }
 
     async handleLines(lines: string[]) {
-        const events = lines.map((line) => this.parser.parseLine(line));
+        const events = lines.map((line) => this.parser.parseLine(line))
+            .filter(x => !!x) as WowEvent[];
         this.emit(events);
         return events;
     }

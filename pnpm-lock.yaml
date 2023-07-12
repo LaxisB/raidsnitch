@@ -17,9 +17,9 @@ importers:
 
   apps/raidsnitch:
     dependencies:
-      '@raidsnitch/logparser':
+      '@raidsnitch/parser':
         specifier: workspace:^
-        version: link:../../packages/logparser
+        version: link:../../packages/parser
       '@raidsnitch/shared':
         specifier: workspace:^
         version: link:../../packages/shared
@@ -58,7 +58,7 @@ importers:
         specifier: ^2.7.0
         version: 2.7.0(solid-js@1.7.6)(vite@4.3.9)
 
-  packages/logparser:
+  packages/parser:
     devDependencies:
       tsconfig:
         specifier: workspace:^
@@ -78,9 +78,9 @@ importers:
 
   packages/snitch:
     devDependencies:
-      '@raidsnitch/logparser':
+      '@raidsnitch/parser':
         specifier: workspace:^
-        version: link:../logparser
+        version: link:../parser
       tsconfig:
         specifier: workspace:^
         version: link:../tsconfig

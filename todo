@@ -1,10 +1,9 @@
-- [ ] follow turbo examples for package handling
-  - [ ] tsup for lib
-  - [ ] config workspace
-  - [ ] 
+- [x] follow turbo examples for package handling
+  - [x] config workspace
 - [ ] incrementally parse events instead of splitting strings in file handlers
 - [x] refactor HighLevelEvent
   - [ ] implement remaining types
+  - [x] merge with line-level parser
 - [ ] clean up snitch state & handlers
   - [x] decide on handler concept
   - [ ] clean dps handler

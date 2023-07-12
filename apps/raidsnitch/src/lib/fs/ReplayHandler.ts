@@ -1,4 +1,4 @@
-import { LogLine, Parser, createParser } from '@raidsnitch/logparser';
+import { Parser, createParser } from '@raidsnitch/parser';
 import { formatFileSize } from '@raidsnitch/shared/format';
 import { wrapLog } from '@raidsnitch/shared/log';
 import { sleep } from '@raidsnitch/shared/utils';
@@ -20,7 +20,7 @@ export class ReplayHandler extends BaseFileHandler {
     private totalLines = 0;
     private readCount = 0;
 
-    private cachedEvents: LogLine[] = [];
+    private cachedEvents: any[] = [];
     private emissionTargetTime = 0;
     private cachedEventsInterval: any = null;
 

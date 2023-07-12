@@ -5,7 +5,7 @@
   "types": "dist/index.d.ts",
   "devDependencies": {
     "typescript": "^5.1.6",
-    "@raidsnitch/logparser": "workspace:^",
+    "@raidsnitch/parser": "workspace:^",
     "tsconfig": "workspace:^"
   },
   "scripts": {

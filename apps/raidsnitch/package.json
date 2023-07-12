@@ -21,7 +21,7 @@
     "vite-plugin-solid": "^2.7.0"
   },
   "dependencies": {
-    "@raidsnitch/logparser": "workspace:^",
+    "@raidsnitch/parser": "workspace:^",
     "@raidsnitch/snitch": "workspace:^",
     "@raidsnitch/shared": "workspace:^",
     "tsconfig": "workspace:^",

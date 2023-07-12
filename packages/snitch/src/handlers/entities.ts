@@ -1,5 +1,5 @@
+import { EntityEvent, WowEvent, casts } from '@raidsnitch/parser';
 import type { State } from '..';
-import { EntityEvent, WowEvent, casts } from '../events';
 import { CreateHandler } from './domain';
 
 export interface EntityState {
