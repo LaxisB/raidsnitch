@@ -6,6 +6,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsxImportSource": "solid-js",
+    "jsx": "preserve",
     "types": ["vite/client", "node", "./src/types.d.ts"]
   }
 }

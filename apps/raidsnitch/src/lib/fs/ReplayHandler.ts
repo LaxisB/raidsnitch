@@ -1,4 +1,4 @@
-import { Parser, createParser } from '@raidsnitch/parser';
+import { Parser, WowEvent, createParser } from '@raidsnitch/parser';
 import { formatFileSize } from '@raidsnitch/shared/format';
 import { wrapLog } from '@raidsnitch/shared/log';
 import { sleep } from '@raidsnitch/shared/utils';
@@ -20,7 +20,7 @@ export class ReplayHandler extends BaseFileHandler {
     private totalLines = 0;
     private readCount = 0;
 
-    private cachedEvents: any[] = [];
+    private cachedEvents: WowEvent[] = [];
     private emissionTargetTime = 0;
     private cachedEventsInterval: any = null;
 
@@ -95,7 +95,8 @@ export class ReplayHandler extends BaseFileHandler {
     }
 
     private async handleLines(lines: string[]) {
-        const res = lines.map((line) => this.parser.parseLine(line));
+        const res = lines.map((line) => this.parser.parseLine(line))
+            .filter(x => !!x) as WowEvent[];
         this.cachedEvents.push(...res);
     }
 
@@ -112,10 +113,10 @@ export class ReplayHandler extends BaseFileHandler {
         let spliceIndex = boundaryIndex === -1 ? this.cachedEvents.length : boundaryIndex;
         const toEmit = this.cachedEvents.splice(0, spliceIndex - 1);
 
-        if (toEmit.some((e) => e.event === 'ENCOUNTER_START')) {
+        if (toEmit.some((e) => e.name === 'ENCOUNTER_START')) {
             TIMESCALE = 1;
         }
-        if (toEmit.some((e) => e.event === 'ENCOUNTER_END')) {
+        if (toEmit.some((e) => e.name === 'ENCOUNTER_END')) {
             TIMESCALE = 10;
         }
 

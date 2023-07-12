@@ -13,8 +13,6 @@ export default () => {
         <pre>{JSON.stringify(state.log.stats?.zone, null, 4)}</pre>
         <header>encounter</header>
         <pre>{JSON.stringify(state.log.stats?.encounter, null, 4)}</pre>
-        <header>entities</header>
-        <pre>{JSON.stringify(state.log.stats?.entities, null, 4)}</pre>
       </div>
       <div class={`${classes.frame} ${classes.frameDebug}`}>
         <Debug />

@@ -9,12 +9,25 @@ let dirWatcher: DirWatcher | null = null;
 let fileWatcher: ReplayHandler | null = null;
 let snitch: Snitch;
 
+const maybeEmit = (function () {
+  let isEmitting = false;
+  return function (state: Snitch['state']) {
+    if (isEmitting) {
+      return;
+    }
+    emitter.emit('stats', state);
+    requestAnimationFrame(() => {
+      isEmitting = false;
+    });
+  };
+})();
+
 function reset() {
   dirWatcher?.close();
   fileWatcher?.close();
   dirWatcher = null;
   fileWatcher = null;
-  snitch = initializeSnitch((stats) => emitter.emit('stats', stats));
+  snitch = initializeSnitch(maybeEmit);
 }
 
 export const handlers: CoreInterface = {
