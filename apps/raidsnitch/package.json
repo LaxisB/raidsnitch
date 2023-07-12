@@ -24,6 +24,7 @@
     "@raidsnitch/logparser": "workspace:^",
     "@raidsnitch/snitch": "workspace:^",
     "@raidsnitch/shared": "workspace:^",
+    "tsconfig": "workspace:^",
     "idb-keyval": "^6.2.1",
     "solid-js": "^1.7.6"
   }

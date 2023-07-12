@@ -5,10 +5,12 @@
   "types": "dist/index.d.ts",
   "devDependencies": {
     "typescript": "^5.1.6",
-    "@raidsnitch/logparser": "workspace:^"
+    "@raidsnitch/logparser": "workspace:^",
+    "tsconfig": "workspace:^"
   },
   "scripts": {
     "build": "tsc -p .",
+    "lint": "tsc --noEmit",
     "dev": "tsc -p . --watch"
   },
   "license": "MIT"

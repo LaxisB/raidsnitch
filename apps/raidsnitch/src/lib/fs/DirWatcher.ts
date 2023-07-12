@@ -1,5 +1,5 @@
 import { get, set } from 'idb-keyval';
-import type { FileHandler, LogStates } from '../../core/domain';
+import { FileHandler, LogStates } from '../../core/domain';
 import { wrapLog } from '@raidsnitch/shared/log';
 import { emitter } from '../../core/emitter';
 

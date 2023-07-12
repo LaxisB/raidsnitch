@@ -1,3 +1,7 @@
+- [ ] follow turbo examples for package handling
+  - [ ] tsup for lib
+  - [ ] config workspace
+  - [ ] 
 - [ ] incrementally parse events instead of splitting strings in file handlers
 - [x] refactor HighLevelEvent
   - [ ] implement remaining types
@@ -5,5 +9,6 @@
   - [x] decide on handler concept
   - [ ] clean dps handler
 - [ ] write proxy to intercept state mutations for leaner messages
+  - [ ] figure out when it's faster than sending whole state
 - [ ] dev-only assertions in parser
 - [ ] make replay dev only

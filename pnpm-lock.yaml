@@ -32,6 +32,9 @@ importers:
       solid-js:
         specifier: ^1.7.6
         version: 1.7.6
+      tsconfig:
+        specifier: workspace:^
+        version: link:../../packages/tsconfig
     devDependencies:
       '@microsoft/rush':
         specifier: ^5.100.1
@@ -57,12 +60,18 @@ importers:
 
   packages/logparser:
     devDependencies:
+      tsconfig:
+        specifier: workspace:^
+        version: link:../tsconfig
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
 
   packages/shared:
     devDependencies:
+      tsconfig:
+        specifier: workspace:^
+        version: link:../tsconfig
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -72,9 +81,14 @@ importers:
       '@raidsnitch/logparser':
         specifier: workspace:^
         version: link:../logparser
+      tsconfig:
+        specifier: workspace:^
+        version: link:../tsconfig
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
+
+  packages/tsconfig: {}
 
 packages:
 

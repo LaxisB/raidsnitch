@@ -1,12 +1,10 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "tsconfig/lib.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
+    "rootDir": "src",
     "outDir": "dist",
     "declaration": true
   },
-  "files": ["src/index.ts"]
+  "include": ["."],
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"]
 }

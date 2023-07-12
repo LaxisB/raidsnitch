@@ -1,10 +1,10 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "tsconfig/vite.json",
   "compilerOptions": {
-    "target": "ESNext",
+    "rootDir": "src",
+    "outDir": "dist",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "types": ["vite/client", "node", "./src/types.d.ts"]
   }
