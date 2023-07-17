@@ -1,7 +1,8 @@
 import { WowEvent } from '@raidsnitch/parser';
 import { createDpsHandler } from './handlers/dps';
-import { createEncounterHandler } from './handlers/encounter';
 import { createEntitiesHandler } from './handlers/entities';
+import { createHpsHandler } from './handlers/hps';
+import { createSegmentHandler } from './handlers/segments';
 import { createZoneHandler } from './handlers/zone';
 
 export type State = ReturnType<typeof initialize>['state'];
@@ -12,19 +13,21 @@ export interface Snitch {
 
 export function initialize(handleStats: (stats: State) => void) {
   let refTime = -1;
-  const encounters = createEncounterHandler();
   const zone = createZoneHandler();
   const entities = createEntitiesHandler();
   const dps = createDpsHandler();
+  const hps = createHpsHandler();
+  const segments = createSegmentHandler();
 
   let state = {
-    encounter: encounters.initialState,
     zone: zone.initialState,
     entities: entities.initialState,
     dps: dps.initialState,
+    hps: hps.initialState,
+    segments: segments.initialState,
   };
 
-  const handlers = [encounters.handleEvent, zone.handleEvent, entities.handleEvent, dps.handleEvent];
+  const handlers = [segments.handleEvent, zone.handleEvent, entities.handleEvent, dps.handleEvent, hps.handleEvent];
 
   function handleEvents(events: WowEvent[]) {
     events.forEach((event) => {

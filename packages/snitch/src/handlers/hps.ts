@@ -2,37 +2,32 @@ import { EntityEvent, WowEvent } from '@raidsnitch/parser';
 import type { State } from '..';
 import { CreateHandler } from './domain';
 
-interface DpsMeasure {
+interface HpsMeasure {
   total: number;
   perSecond: number;
   percent: number;
 }
 
-export interface DpsGroup {
-  entities: Record<string, DpsMeasure>;
+export interface HpsGroup {
+  entities: Record<string, HpsMeasure>;
   ids: string[];
-  top?: DpsMeasure;
+  top?: HpsMeasure;
   total: number;
   timeStart: number;
   timeLast: number;
 }
 
-export interface DpsState {
-  bySegment: Record<string, DpsGroup>;
+export interface HpsState {
+  bySegment: Record<string, HpsGroup>;
 }
 
-export const createDpsHandler: CreateHandler<DpsState> = () => {
-  let initialState: DpsState = {
+export const createHpsHandler: CreateHandler<HpsState> = () => {
+  let initialState: HpsState = {
     bySegment: {},
   };
 
   function handleEvent(event: WowEvent, state: State) {
-    if (
-      event.name === 'SPELL_DAMAGE' ||
-      event.name === 'SPELL_PERIODIC_DAMAGE' ||
-      event.name === 'SWING_DAMAGE' ||
-      event.name === 'RANGE_DAMAGE'
-    ) {
+    if (event.name === 'SPELL_HEAL' || event.name === 'SPELL_PERIODIC_HEAL') {
       // ignore nullids
       if (event.baseParams.sourceGuid === '0000000000000000') return;
       let entity = state.entities[event.baseParams.sourceGuid];
@@ -47,10 +42,10 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
       const activeSegments = [state.segments.active.encounter, state.segments.active.challenge].filter(Boolean) as string[];
 
       for (const segmentId of activeSegments) {
-        if (!state.dps.bySegment[segmentId]) {
-          state.dps.bySegment[segmentId] = createDpsGroupState(event.time);
+        if (!state.hps.bySegment[segmentId]) {
+          state.hps.bySegment[segmentId] = createHpsGroupState(event.time);
         }
-        updateDpsGroup(state.dps.bySegment[segmentId], entity.guid, event);
+        updateHpsGroup(state.hps.bySegment[segmentId], entity.guid, event);
       }
     }
   }
@@ -60,7 +55,7 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
   };
 };
 
-function updateDpsGroup(state: DpsGroup | undefined, guid: string, event: EntityEvent) {
+function updateHpsGroup(state: HpsGroup | undefined, guid: string, event: EntityEvent) {
   if (!state) {
     return;
   }
@@ -85,7 +80,7 @@ function updateDpsGroup(state: DpsGroup | undefined, guid: string, event: Entity
   state.top = { ...state.entities[state.ids[0]] };
 }
 
-function createDpsGroupState(time?: number): DpsGroup {
+function createHpsGroupState(time?: number): HpsGroup {
   return {
     total: 0,
     entities: {},
