@@ -1,10 +1,10 @@
-import { createSignal, onMount } from 'solid-js';
+import { createEffect, createMemo, createSignal } from 'solid-js';
 import { ilerp } from '../../../lib/lerp';
 import classes from './sparkline.module.scss';
 interface SparklineProps {
   height: number;
   window: number;
-  data: number[];
+  data: () => number[];
 }
 
 export default (props: SparklineProps) => {
@@ -13,10 +13,14 @@ export default (props: SparklineProps) => {
   let [path, setPath] = createSignal('');
 
   let intl = new Intl.NumberFormat('en-US');
-
-  onMount(() => {
+  let currentVal = createMemo(() => {
+    const data = props.data();
+    return data[data.length - 1];
+  });
+  createEffect(() => {
+    let data = props.data();
     const width = Math.max(el.clientWidth, props.window);
-    const items = props.data.slice(-props.window);
+    const items = data.slice(-props.window);
     const height = props.height;
 
     const min = Math.min(...items) ?? 0;
@@ -37,13 +41,11 @@ export default (props: SparklineProps) => {
     setPath(path);
   });
 
-  const t = props.data[props.data.length - 1];
-
   return (
     <svg height={props.height} ref={(e) => (el = e)} class={classes.sparkline} viewBox={viewBox()}>
       <path d={`M${path()}`} fill="none" />
       <text y={props.height / 2} dominant-baseline="middle">
-        {t < 1 ? t.toPrecision(2) : intl.format(t)}
+        {currentVal() < 1 ? currentVal().toPrecision(2) : intl.format(currentVal())}
       </text>
     </svg>
   );

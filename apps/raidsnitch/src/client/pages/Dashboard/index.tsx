@@ -22,9 +22,6 @@ export default () => {
       <div class={`${classes.frame} ${classes.frameDamage}`}>
         <For each={state.snitch.segments?.ids}>{(segment) => <Details measure="dps" segment={segment} />}</For>
       </div>
-      <div class={`${classes.frame} ${classes.frameHealing}`}>
-        <For each={state.snitch.segments?.ids}>{(segment) => <Details measure="hps" segment={segment} />}</For>
-      </div>
     </div>
   );
 };

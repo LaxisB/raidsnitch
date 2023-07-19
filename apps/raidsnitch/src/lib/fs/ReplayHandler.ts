@@ -33,6 +33,10 @@ export class ReplayHandler extends BaseFileHandler {
         this.parser = createParser(file.lastModified);
 
         const reader = file.stream().pipeThrough(new TextDecoderStream()).getReader();
+        this.actions.debug.dbg({
+                Name: file.name,
+                'Size': Math.fround(file.size / (1024 * 1024)),
+        })
         this.loopRead(file, reader);
         this.cachedEventsInterval = setInterval(() => this.emitCachedEvents(), REPLAY_INTERVAL);
     }
@@ -44,7 +48,6 @@ export class ReplayHandler extends BaseFileHandler {
 
     private async loopRead(file: File, reader: ReadableStreamDefaultReader<string>) {
         const now = Date.now();
-        const deltaTime = now - this.readTime;
 
         if (this.cachedEvents.length >= 1000) {
             await sleep(250);
@@ -65,8 +68,6 @@ export class ReplayHandler extends BaseFileHandler {
 
         if (!done) {
             this.actions.debug.dbg({
-                Name: file.name,
-                'Size': Math.fround(file.size / (1024 * 1024)),
                 'Chunk Size': lines.length,
                 'Line Parse Time (ms)': (Date.now() - now) / lines.length,
                 Backlog: this.cachedEvents.length,
@@ -78,8 +79,6 @@ export class ReplayHandler extends BaseFileHandler {
             clearInterval(this.cachedEventsInterval);
             const total = Date.now() - this.startTime;
             this.actions.debug.dbg( {
-                Name: file.name,
-                'Size': Math.fround(file.size / (1024 * 1024)),
                 'Total Lines': this.totalLines,
                 'Line Parse Time avg (ms)': total / this.totalLines,
                 Backlog: this.cachedEvents.length,
