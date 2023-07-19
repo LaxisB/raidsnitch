@@ -1,8 +1,14 @@
 import { EntityEvent, WowEvent } from '@raidsnitch/parser';
+import { log as _log } from '@raidsnitch/shared';
 import type { State } from '..';
 import { CreateHandler } from './domain';
 
+const log = _log.wrapLog('dps handler');
 interface DpsMeasure {
+  guid?: string;
+  name?: string;
+  spec?: number;
+  entity?: any;
   total: number;
   perSecond: number;
   percent: number;
@@ -31,14 +37,17 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
       event.name === 'SPELL_DAMAGE' ||
       event.name === 'SPELL_PERIODIC_DAMAGE' ||
       event.name === 'SWING_DAMAGE' ||
-      event.name === 'RANGE_DAMAGE'
+      event.name === 'RANGE_DAMAGE' ||
+      event.name === 'SPELL_DAMAGE_SUPPORT'
     ) {
       // ignore nullids
       if (event.baseParams.sourceGuid === '0000000000000000') return;
       let entity = state.entities[event.baseParams.sourceGuid];
       // stuff we don't know
-      if (!entity) return;
-      while (entity.ownerGuid) {
+      if (entity == null) {
+        return;
+      }
+      while (entity?.ownerGuid) {
         entity = state.entities[entity.ownerGuid];
       }
       // end stuff we can't attribute
@@ -50,7 +59,12 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
         if (!state.dps.bySegment[segmentId]) {
           state.dps.bySegment[segmentId] = createDpsGroupState(event.time);
         }
-        updateDpsGroup(state.dps.bySegment[segmentId], entity.guid, event);
+        if (event.name === 'SPELL_DAMAGE_SUPPORT') {
+          // SPELL_DAMAGE_SUPPORT appears in addition to SPELL_DAMAGE, so we need to subtract it
+          reattributeDamage(state, state.dps.bySegment[segmentId], event);
+        } else {
+          updateDpsGroup(state, state.dps.bySegment[segmentId], entity.guid, event);
+        }
       }
     }
   }
@@ -60,29 +74,82 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
   };
 };
 
-function updateDpsGroup(state: DpsGroup | undefined, guid: string, event: EntityEvent) {
-  if (!state) {
+function updateDpsGroup(state: State, groupState: DpsGroup | undefined, guid: string, event: EntityEvent) {
+  if (!groupState) {
     return;
   }
-  state.timeLast = event.time;
-  if (!state.entities[guid]) {
-    state.entities[guid] = {
+  groupState.timeLast = event.time;
+  if (!groupState.entities[guid]) {
+    const entity = state.entities[guid];
+    groupState.entities[guid] = {
+      guid: entity?.guid,
+      name: entity?.name,
+      spec: entity?.spec,
+      entity,
       total: 0,
       perSecond: 0,
       percent: 0,
     };
   }
-  const entityState = state.entities[guid];
+  const entityState = groupState.entities[guid];
 
-  state.total += event.suffixes![0];
+  groupState.total += event.suffixes![0];
   entityState.total += event.suffixes![0];
-  entityState.perSecond = entityState.total / ((event.time - state.timeStart) / 1000);
-  entityState.percent = (entityState.total * 100) / state.total;
-  state.ids = Object.entries(state.entities)
+  entityState.perSecond = entityState.total / ((event.time - groupState.timeStart) / 1000);
+  entityState.percent = (entityState.total * 100) / groupState.total;
+  groupState.ids = Object.entries(groupState.entities)
     .sort(([, a], [, b]) => b.total - a.total)
     .map(([guid]) => guid);
 
-  state.top = { ...state.entities[state.ids[0]] };
+  groupState.top = { ...groupState.entities[groupState.ids[0]] };
+}
+
+function reattributeDamage(state: State, groupState: DpsGroup, event: EntityEvent) {
+  if (!groupState) {
+    return;
+  }
+  groupState.timeLast = event.time;
+  const beneficiary = event.baseParams.sourceGuid;
+  const source = event.suffixes[10];
+
+  // get from direct beneficiary to owner (e.g pets to player)
+  let beneficiaryEntity = state.entities[beneficiary];
+  while (beneficiaryEntity?.ownerGuid) {
+    beneficiaryEntity = state.entities[beneficiaryEntity.ownerGuid];
+  }
+  const beneficiaryState = groupState.entities[beneficiaryEntity.guid];
+
+  const sourceEntity = state.entities[source];
+  // and make sure that sourceState actually exists
+  let sourceState = groupState.entities[source];
+  if (!sourceState) {
+    groupState.entities[source] = {
+      guid: sourceEntity?.guid,
+      name: sourceEntity?.name,
+      spec: sourceEntity?.spec,
+      entity: sourceEntity,
+      total: 0,
+      perSecond: 0,
+      percent: 0,
+    };
+    sourceState = groupState.entities[source];
+  }
+
+  const amount = event.suffixes[0];
+
+  beneficiaryState.total -= amount;
+  beneficiaryState.perSecond = beneficiaryState.total / ((event.time - groupState.timeStart) / 1000);
+  beneficiaryState.percent = (beneficiaryState.total * 100) / groupState.total;
+
+  sourceState.total += amount;
+  sourceState.perSecond = sourceState.total / ((event.time - groupState.timeStart) / 1000);
+  sourceState.percent = (sourceState.total * 100) / groupState.total;
+
+  groupState.ids = Object.entries(groupState.entities)
+    .sort(([, a], [, b]) => b.total - a.total)
+    .map(([guid]) => guid);
+
+  groupState.top = { ...groupState.entities[groupState.ids[0]] };
 }
 
 function createDpsGroupState(time?: number): DpsGroup {

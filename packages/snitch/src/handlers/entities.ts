@@ -1,4 +1,4 @@
-import { EntityEvent, WowEvent, casts } from '@raidsnitch/parser';
+import { EntityEvent, GlobalEvent, WowEvent, casts } from '@raidsnitch/parser';
 import type { State } from '..';
 import { CreateHandler } from './domain';
 
@@ -6,18 +6,15 @@ export interface EntityState {
   // meta
   guid: string;
   name: string;
+  spec?: number;
+  stats: Record<string, number>;
   flags: number;
   raidFlags: number;
-  x?: number;
-  y?: number;
-  facing?: number;
   ownerGuid?: string;
 
   // stats
-  currentHp: number;
-  maxHp: number;
-  currentPower?: number;
-  maxPower?: number;
+  hp: [current: number, max: number];
+  power?: [current: number, max: number, type: any];
 }
 
 export interface EntitiesState {
@@ -40,6 +37,78 @@ export const createEntitiesHandler: CreateHandler<EntitiesState> = () => {
         delete state.entities[guid];
       }
     }
+    if (e.name === 'COMBATANT_INFO') {
+      const event = e as any as GlobalEvent;
+
+      const [
+        guid,
+        _unknown1,
+        str,
+        agi,
+        stam,
+        int,
+        dodge,
+        parry,
+        block,
+        critmelee,
+        critranged,
+        crispell,
+        speed,
+        leech,
+        hastemelee,
+        hasteranged,
+        hastespell,
+        avoidance,
+        mastery,
+        versdamage,
+        versheal,
+        verstaken,
+        armor,
+        spec,
+      ] = event.untyped;
+      const talents = event.untyped[24];
+      const pvpTalents = event.untyped[25];
+      const items = event.untyped[26];
+      const interestingAuras = event.untyped[27];
+
+      let entity = state.entities[guid];
+      if (!entity) {
+        entity = state.entities[guid] = {
+          guid,
+          name: '',
+          flags: 0,
+          raidFlags: 0,
+          hp: [0, 0],
+          stats: {},
+        };
+      }
+      Object.assign(entity, {
+        spec,
+        stats: {
+          str,
+          agi,
+          stam,
+          int,
+          dodge,
+          parry,
+          block,
+          critmelee,
+          critranged,
+          crispell,
+          speed,
+          leech,
+          hastemelee,
+          hasteranged,
+          hastespell,
+          avoidance,
+          mastery,
+          versdamage,
+          versheal,
+          verstaken,
+          armor,
+        },
+      });
+    }
 
     // don't handle other global events
     if ('advanced' in e === false) {
@@ -48,32 +117,32 @@ export const createEntitiesHandler: CreateHandler<EntitiesState> = () => {
     const event = e as EntityEvent;
 
     const sourceGuid = event.baseParams.sourceGuid;
-    const destGuid = event.baseParams.destGuid;
-    const infoGuid = event.advanced?.infoGuid;
-
-    if (sourceGuid && guidIsInteresting(sourceGuid) && !state.entities[sourceGuid]) {
-      state.entities[sourceGuid] = {
+    if (sourceGuid && guidIsInteresting(sourceGuid) && !state.entities[sourceGuid]?.name) {
+      state.entities[sourceGuid] = Object.assign(state.entities[sourceGuid] ?? {}, {
         guid: sourceGuid,
         name: event.baseParams.sourceName,
         flags: event.baseParams.sourceFlags,
         raidFlags: event.baseParams.sourceRaidFlags,
-        currentHp: 0,
-        maxHp: 0,
-      };
+        hp: [0, 0],
+        stats: {},
+      });
     }
-    if (destGuid && guidIsInteresting(destGuid) && !state.entities[destGuid]) {
-      state.entities[destGuid] = {
+
+    const destGuid = event.baseParams.destGuid;
+    if (destGuid && guidIsInteresting(destGuid) && !state.entities[destGuid]?.name) {
+      state.entities[destGuid] = Object.assign(state.entities[destGuid] ?? {}, {
         guid: destGuid,
         name: event.baseParams.destName,
         flags: event.baseParams.destFlags,
         raidFlags: event.baseParams.destRaidFlags,
-        currentHp: 0,
-        maxHp: 0,
         ownerGuid: getOwnerGuid(event),
-      };
+        hp: [0, 0],
+        stats: {},
+      });
     }
 
-    if (infoGuid && guidIsInteresting(infoGuid) && state.entities[infoGuid]) {
+    const infoGuid = event.advanced?.infoGuid;
+    if (infoGuid && guidIsInteresting(infoGuid) && state.entities[infoGuid]?.name) {
       const entity = state.entities[infoGuid];
       if (event.advanced?.currentHp! === 0 && !infoGuid.startsWith('Player-')) {
         delete state.entities[infoGuid];
@@ -83,13 +152,11 @@ export const createEntitiesHandler: CreateHandler<EntitiesState> = () => {
       if (ownerGuid) {
         entity.ownerGuid = ownerGuid;
       }
-      entity.currentHp = event.advanced?.currentHp!;
-      entity.maxHp = event.advanced?.maxHp!;
-      entity.x = event.advanced?.positionX;
-      entity.y = event.advanced?.positionY;
-      entity.facing = event.advanced?.facing;
-      entity.currentPower = event.advanced?.currentPower;
-      entity.maxPower = event.advanced?.maxPower;
+      if (!event.advanced) {
+        return;
+      }
+      entity.hp = [event.advanced!.currentHp ?? 0, event.advanced!.maxHp ?? 0];
+      entity.power = [event.advanced!.currentPower, event.advanced!.maxPower, event.advanced!.powerType];
     }
   }
   return {

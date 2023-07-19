@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`lineParser > parses data 1`] = `
+{
+  "event": "COMBAT_LOG_VERSION",
+  "line": "7/1 19:58:19.733  COMBAT_LOG_VERSION,20,ADVANCED_LOG_ENABLED,1,BUILD_VERSION,10.1.0,PROJECT_ID,1",
+  "offset": 0,
+  "payload": [
+    20,
+    "ADVANCED_LOG_ENABLED",
+    1,
+    "BUILD_VERSION",
+    "10.1.0",
+    "PROJECT_ID",
+    1,
+  ],
+  "time": 15706699733,
+}
+`;

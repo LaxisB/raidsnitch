@@ -6,6 +6,7 @@
   "devDependencies": {
     "typescript": "^5.1.6",
     "@raidsnitch/parser": "workspace:^",
+    "@raidsnitch/shared": "workspace:^",
     "tsconfig": "workspace:^"
   },
   "scripts": {

@@ -9,6 +9,7 @@ interface Segment {
   endTime?: number;
   name: string;
   success?: number;
+  combatantGuids: string[];
 }
 
 interface EncounterSegment extends Segment {
@@ -45,10 +46,31 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
         name: event.untyped[1],
         difficultyId: event.untyped[2],
         raidSize: event.untyped[3],
+        startTime: event.time,
+        combatantGuids: [],
       } as EncounterSegment;
       state.segments.byId[segment.id] = segment;
       state.segments.ids.push(segment.id);
       state.segments.active.encounter = segment.id;
+    }
+
+    if (casts.eventIsZoneChange(event)) {
+      if (state.segments.active.encounter) {
+        const segment = state.segments.byId[state.segments.active.encounter] as EncounterSegment;
+        if (!segment) {
+          return;
+        }
+        segment.active = false;
+        segment.endTime = event.time;
+      }
+      if (state.segments.active.challenge) {
+        const segment = state.segments.byId[state.segments.active.challenge] as ChallengeSegment;
+        if (!segment) {
+          return;
+        }
+        segment.active = false;
+        segment.endTime = event.time;
+      }
     }
 
     if (casts.eventIsEncounterEnd(event)) {
@@ -61,7 +83,9 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
       }
       segment.active = false;
       segment.endTime = event.time;
+      state.segments.active.encounter = null;
     }
+
     if (casts.eventIsChallengeModeStart(event)) {
       const segment = {
         active: true,
@@ -71,6 +95,7 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
         name: event.untyped[0],
         level: event.untyped[3],
         affixes: event.untyped[4] as any,
+        combatantGuids: [],
       } as ChallengeSegment;
       state.segments.byId[segment.id] = segment;
       state.segments.ids.push(segment.id);
@@ -87,6 +112,16 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
       }
       segment.active = false;
       segment.endTime = event.time;
+      state.segments.active.challenge = null;
+    }
+
+    if (event.name === 'COMBATANT_INFO') {
+      if (state.segments.active.encounter) {
+        state.segments.byId[state.segments.active.encounter].combatantGuids.push((event as any).untyped[0]);
+      }
+      if (state.segments.active.challenge) {
+        state.segments.byId[state.segments.active.challenge].combatantGuids.push((event as any).untyped[0]);
+      }
     }
   }
 

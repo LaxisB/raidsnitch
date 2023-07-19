@@ -5,13 +5,28 @@
   color: var(--app-foreground);
   width: 100%;
   height: 100vh;
+  --class-color--deathknight: #ff324a;
+  --class-color--demonhunter: #d43aff;
+  --class-color--druid: #ff7c0a;
+  --class-color--evoker: #33937f;
+  --class-color--hunter: #aad372;
+  --class-color--mage: #3fc7eb;
+  --class-color--monk: #00ff98;
+  --class-color--paladin: #f48cba;
+  --class-color--priest: #ffffff;
+  --class-color--rogue: #fff468;
+  --class-color--shaman: #0086ff;
+  --class-color--warlock: #8788ee;
+  --class-color--warrior: #c69b6d;
 }
 .light {
   --app-background: #eee;
   --app-foreground: #202124;
+  --app-subtle: #666;
 }
 
 .dark {
   --app-background: #202124;
   --app-foreground: #eee;
+  --app-subtle: #666;
 }

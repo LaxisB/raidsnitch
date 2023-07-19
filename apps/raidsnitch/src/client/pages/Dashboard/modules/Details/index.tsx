@@ -19,7 +19,7 @@ export default (props: DetailsProps) => {
 
   return (
     <div class={classes.dps}>
-      <header>
+      <header class={classes.header}>
         {props.measure} for {store.log.stats?.segments.byId[props.segment]?.name} ({dur()})
       </header>
       <For each={base()?.ids} fallback={fallback}>
@@ -37,12 +37,14 @@ interface DetailsLineProps {
 function DetailsLine(props: DetailsLineProps) {
   const [store] = useStore();
   const counterState = () => store.log.stats?.[props.measure as any as 'dps'].bySegment[props.segment];
+  const entityState = () => store.log.stats?.entities;
+  const spec = () => counterState()?.entities[props.guid]?.entity?.spec ?? 'nospec';
 
   const barWidth = createMemo(() => calculateBarWidth(counterState()?.entities[props.guid]?.perSecond, counterState()?.top?.perSecond));
 
   return (
-    <div class={classes.entry} style={{ '--val': barWidth() }}>
-      <div class={classes.entryName}>{store.log.stats?.entities?.[props.guid].name}</div>{' '}
+    <div class={classes.entry} classList={{ [classes['spec' + spec()]]: true }} style={{ '--val': barWidth() }}>
+      <div class={classes.entryName}>{counterState()?.entities[props.guid].name}</div>{' '}
       <div class={classes.entryValue}>
         {formatNum(counterState()?.entities[props.guid]?.total ?? 0)}
         {' | '}

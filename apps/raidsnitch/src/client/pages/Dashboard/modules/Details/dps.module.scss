@@ -1,3 +1,6 @@
+.header {
+  font-weight: bold;
+}
 .entry {
   position: relative;
   display: flex;
@@ -17,7 +20,8 @@
     top: 0;
     left: -100%;
     transform: translateX(var(--val));
-    background-color: rgba(200, 200, 200, 0.15);
+    background-color: var(--app-subtle);
+    opacity: 0.2;
     z-index: inherit;
   }
 
@@ -36,4 +40,95 @@
     font-family: monospace;
     line-height: 1.2em;
   }
+}
+
+.spec250::before,
+.spec251::before,
+.spec252::before,
+.spec1455 {
+  background-color: var(--class-color--deathknight);
+}
+
+.spec577::before,
+.spec581::before,
+.spec1456::before {
+  background-color: var(--class-color--demonhunter);
+}
+
+.spec102::before,
+.spec103::before,
+.spec104::before,
+.spec105::before,
+.spec1457::before {
+  background-color: var(--class-color--druid);
+}
+
+.spec1467::before,
+.spec1468::before,
+.spec1473::before,
+.spec1465::before {
+  background-color: var(--class-color--evoker);
+}
+
+.spec253::before,
+.spec254::before,
+.spec255::before,
+.spec1448::before {
+  background-color: var(--class-color--hunter);
+}
+
+.spec62::before,
+.spec63::before,
+.spec65::before,
+.spec1449::before {
+  background-color: var(--class-color--mage);
+}
+
+.spec268::before,
+.spec270::before,
+.spec269::before,
+.spec1450::before {
+  background-color: var(--class-color--monk);
+}
+
+.spec65::before,
+.spec66::before,
+.spec70::before,
+.spec1451::before {
+  background-color: var(--class-color--paladin);
+}
+
+.spec256::before,
+.spec257::before,
+.spec258::before,
+.spec1452::before {
+  background-color: var(--class-color--priest);
+}
+
+.spec259::before,
+.spec260::before,
+.spec261::before,
+.spec1453::before {
+  background-color: var(--class-color--rogue);
+}
+
+.spec262::before,
+.spec263::before,
+.spec264::before,
+.spec1444::before {
+  background-color: var(--class-color--shaman);
+}
+
+.spec256::before,
+.spec266::before,
+.spec267::before,
+.spec1454::before {
+  background-color: var(--class-color--warlock);
+}
+
+.spec71::before,
+.spec72::before,
+.spec73::before,
+.spec1446::before {
+  background-color: var(--class-color--warrior);
 }

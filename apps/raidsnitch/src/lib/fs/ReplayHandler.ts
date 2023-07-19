@@ -50,7 +50,8 @@ export class ReplayHandler extends BaseFileHandler {
         const deltaTime = now - this.readTime;
 
         if (this.cachedEvents.length >= 1000) {
-            await sleep(100);
+            await sleep(250);
+            this.readTime = now;
             this.schedule(() => this.loopRead(file, reader));
             return;
         }
@@ -72,8 +73,7 @@ export class ReplayHandler extends BaseFileHandler {
                 Backlog: this.cachedEvents.length,
                 Progress: ((this.readCount / file.size) * 100).toFixed(2) + '%',
                 'Chunk Size': lines.length,
-                'Δ Time (ms)': deltaTime,
-                'Line Parse Time (ms)': (Date.now() - this.readTime) / lines.length,
+                'Line Parse Time (ms)': (Date.now() - now) / lines.length,
             });
             this.readTime = now;
             this.schedule(() => this.loopRead(file, reader));
@@ -86,7 +86,6 @@ export class ReplayHandler extends BaseFileHandler {
                 Backlog: this.cachedEvents.length,
                 Progress: '100%',
                 'Total Lines': this.totalLines,
-                'Wall Time (ms)': total,
                 'Line Parse Time avg (ms)': total / this.totalLines,
             });
             emitter.emit('logDone', true);

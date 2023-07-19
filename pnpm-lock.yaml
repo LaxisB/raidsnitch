@@ -84,6 +84,9 @@ importers:
       '@raidsnitch/parser':
         specifier: workspace:^
         version: link:../parser
+      '@raidsnitch/shared':
+        specifier: workspace:^
+        version: link:../shared
       tsconfig:
         specifier: workspace:^
         version: link:../tsconfig

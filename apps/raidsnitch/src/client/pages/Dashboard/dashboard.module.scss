@@ -10,17 +10,17 @@
 
 .frame {
   padding: 0.5em;
-  border: 1px solid var(--app-foreground);
+  border: 1px solid var(--app-subtle);
   background: var(--app-background);
+  overflow: auto;
 
   &--debug {
     grid-column: 5 / span 2;
-    grid-row: 1 / span 1;
+    grid-row: 1 / span 3;
   }
   &--stats {
     grid-column: 5 / span 2;
-    grid-row: span 5;
-    overflow: auto;
+    grid-row: span 3;
   }
 
   &--damage {
