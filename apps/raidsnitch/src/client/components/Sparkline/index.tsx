@@ -1,5 +1,5 @@
 import { createSignal, onMount } from 'solid-js';
-import { ilerp } from '../../../core/lerp';
+import { ilerp } from '../../../lib/lerp';
 import classes from './sparkline.module.scss';
 interface SparklineProps {
   height: number;

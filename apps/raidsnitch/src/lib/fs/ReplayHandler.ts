@@ -1,8 +1,6 @@
 import { Parser, WowEvent, createParser } from '@raidsnitch/parser';
-import { formatFileSize } from '@raidsnitch/shared/format';
 import { wrapLog } from '@raidsnitch/shared/log';
 import { sleep } from '@raidsnitch/shared/utils';
-import { emitter } from '../../core/emitter';
 import { BaseFileHandler } from './FileHandler';
 
 const log = wrapLog('replay_handler');
@@ -33,7 +31,6 @@ export class ReplayHandler extends BaseFileHandler {
         this.startTime = this.readTime;
         this.totalLines = 0;
         this.parser = createParser(file.lastModified);
-        emitter.emit('logDone', false);
 
         const reader = file.stream().pipeThrough(new TextDecoderStream()).getReader();
         this.loopRead(file, reader);
@@ -67,28 +64,27 @@ export class ReplayHandler extends BaseFileHandler {
         }
 
         if (!done) {
-            emitter.emit('logDebug', {
+            this.actions.debug.dbg({
                 Name: file.name,
-                'Size (MiB)': Math.fround(file.size / (1024 * 1024)),
-                Backlog: this.cachedEvents.length,
-                Progress: ((this.readCount / file.size) * 100).toFixed(2) + '%',
+                'Size': Math.fround(file.size / (1024 * 1024)),
                 'Chunk Size': lines.length,
                 'Line Parse Time (ms)': (Date.now() - now) / lines.length,
+                Backlog: this.cachedEvents.length,
+                Progress: ((this.readCount / file.size) * 100).toFixed(2) + '%',
             });
             this.readTime = now;
             this.schedule(() => this.loopRead(file, reader));
         } else {
             clearInterval(this.cachedEventsInterval);
             const total = Date.now() - this.startTime;
-            emitter.emit('logDebug', {
+            this.actions.debug.dbg( {
                 Name: file.name,
-                Size: formatFileSize(file.size),
-                Backlog: this.cachedEvents.length,
-                Progress: '100%',
+                'Size': Math.fround(file.size / (1024 * 1024)),
                 'Total Lines': this.totalLines,
                 'Line Parse Time avg (ms)': total / this.totalLines,
+                Backlog: this.cachedEvents.length,
+                Progress: '100%',
             });
-            emitter.emit('logDone', true);
             log.log('Done reading file');
         }
     }
@@ -120,10 +116,10 @@ export class ReplayHandler extends BaseFileHandler {
         }
 
         this.emissionTargetTime += REPLAY_INTERVAL * TIMESCALE;
-        emitter.emit('logDebug', { 'Target Time': new Date(this.emissionTargetTime).toLocaleTimeString() });
+        this.actions.debug.dbg( { 'Target Time': new Date(this.emissionTargetTime).toLocaleTimeString() });
 
         if (toEmit.length) {
-            emitter.emit('logDebug', { Backlog: this.cachedEvents.length });
+            this.actions.debug.dbg({ Backlog: this.cachedEvents.length });
             this.emit(toEmit);
         }
     }

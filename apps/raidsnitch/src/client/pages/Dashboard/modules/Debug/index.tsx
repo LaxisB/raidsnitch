@@ -13,7 +13,7 @@ export default function (props: DebugProps) {
   const [dbgKeys, setDbgKeys] = createSignal<{ key: string; value: any }[]>([]);
 
   createEffect(() => {
-    setDbgKeys(Object.keys(state.log.debug).map((key) => ({ key, value: state.log.debug[key] })));
+    setDbgKeys(Object.keys(state.debug).map((key) => ({ key, value: state.debug[key] })));
   });
 
   return (

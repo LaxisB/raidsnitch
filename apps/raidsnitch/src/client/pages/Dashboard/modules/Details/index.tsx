@@ -13,14 +13,14 @@ export default (props: DetailsProps) => {
 
   const fallback = <span>-</span>;
 
-  const base = createMemo(() => store.log.stats?.[props.measure as any as 'dps']?.bySegment[props.segment]);
+  const base = createMemo(() => store.snitch[props.measure as any as 'dps']?.bySegment[props.segment]);
 
   const dur = createMemo(() => formatDuration(base()?.timeLast! - base()?.timeStart!));
 
   return (
     <div class={classes.dps}>
       <header class={classes.header}>
-        {props.measure} for {store.log.stats?.segments.byId[props.segment]?.name} ({dur()})
+        {props.measure} for {store.snitch.segments.byId[props.segment]?.name} ({dur()})
       </header>
       <For each={base()?.ids} fallback={fallback}>
         {(guid) => <DetailsLine guid={guid} measure={props.measure} segment={props.segment} />}
@@ -36,8 +36,7 @@ interface DetailsLineProps {
 }
 function DetailsLine(props: DetailsLineProps) {
   const [store] = useStore();
-  const counterState = () => store.log.stats?.[props.measure as any as 'dps'].bySegment[props.segment];
-  const entityState = () => store.log.stats?.entities;
+  const counterState = () => store.snitch[props.measure as any as 'dps'].bySegment[props.segment];
   const spec = () => counterState()?.entities[props.guid]?.entity?.spec ?? 'nospec';
 
   const barWidth = createMemo(() => calculateBarWidth(counterState()?.entities[props.guid]?.perSecond, counterState()?.top?.perSecond));

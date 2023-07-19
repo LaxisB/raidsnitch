@@ -1,5 +1,6 @@
 import { WowEvent } from '@raidsnitch/parser';
-import { FileHandler } from '../../core/domain';
+import { Actions } from '../../client/domain';
+import { FileHandler } from './domain';
 
 export class BaseFileHandler implements FileHandler {
     doStop = false;
@@ -7,7 +8,7 @@ export class BaseFileHandler implements FileHandler {
 
     partial = '';
 
-    constructor(private handlerCb: (lines: WowEvent[]) => void) {}
+    constructor(protected actions: Actions) {}
 
     readText(text?: string) {
         if (!text) {
@@ -38,6 +39,6 @@ export class BaseFileHandler implements FileHandler {
             return;
         }
 
-        this.handlerCb(lines);
+        this.actions.snitch.handleEvents(lines);
     }
 }

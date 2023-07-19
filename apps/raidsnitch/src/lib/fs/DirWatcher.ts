@@ -1,7 +1,6 @@
 import { wrapLog } from '@raidsnitch/shared/log';
 import { get, set } from 'idb-keyval';
-import { FileHandler, LogStates } from '../../core/domain';
-import { emitter } from '../../core/emitter';
+import { FileHandler, LogStates } from './domain';
 
 const log = wrapLog('dir_watcher');
 
@@ -11,7 +10,7 @@ export class DirWatcher {
     private readDirTimeout: NodeJS.Timeout | null = null;
     protected state = LogStates.INITIAL;
 
-    constructor(private fileHandler: FileHandler) {}
+    constructor( private fileHandler: FileHandler) {}
 
     async restore() {
         const dirHandle = await get('dirHandle');
@@ -64,7 +63,6 @@ export class DirWatcher {
         if (file && file.name != this.fileHandle?.name) {
             this.fileHandle = file;
             this.setState(LogStates.HAS_FILE);
-            emitter.emit('logDone', false);
             this.fileHandler.handleFileChange(file);
         }
 
@@ -100,7 +98,6 @@ export class DirWatcher {
     }
     private setState(state: LogStates) {
         this.state = state;
-        emitter.emit('dirWatcherState', state);
     }
 }
 

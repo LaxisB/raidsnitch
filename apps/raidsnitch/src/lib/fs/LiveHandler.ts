@@ -1,7 +1,6 @@
 import { createParser, Parser, WowEvent } from '@raidsnitch/parser';
 import { wrapLog } from '@raidsnitch/shared/log';
 import { sleep } from '@raidsnitch/shared/utils';
-import { emitter } from '../../core/emitter';
 import { BaseFileHandler } from './FileHandler';
 
 const log = wrapLog('live_log_handler');
@@ -55,7 +54,7 @@ export class LiveHandler extends BaseFileHandler {
         this.totalLines += lines.length;
         await this.handleLines(lines);
 
-        emitter.emit('logDebug', {
+        this.actions.debug.dbg({
             Name: file.name,
             'Size (MiB)': Math.fround(file.size / (1024 * 1024)),
             'Chunk Size': lines.length,

@@ -1,4 +1,4 @@
-import { Component, Match, Show, Switch } from 'solid-js';
+import { Component, Match, Switch } from 'solid-js';
 import './App.scss';
 import Theme from './components/Theme';
 import Dashboard from './pages/Dashboard';
@@ -12,20 +12,20 @@ const App: Component = () => {
   return (
     <>
       <Theme>
-        <Show when={state.ready}>
-          <Switch>
-            <Match when={state.ui.viewstate === 'initial'}>&nbsp;</Match>
-            <Match when={state.ui.viewstate === 'need_file'}>
-              <FileSelect />
-            </Match>
-            <Match when={state.ui.viewstate === 'need_permisison'}>
-              <Reauth />
-            </Match>
-            <Match when={state.ui.viewstate === 'ready'}>
-              <Dashboard />
-            </Match>
-          </Switch>
-        </Show>
+        <Switch>
+          <Match when={state.ui.viewstate === 'initial'}>
+            <FileSelect />1
+          </Match>
+          <Match when={state.ui.viewstate === 'need_file'}>
+            <FileSelect />
+          </Match>
+          <Match when={state.ui.viewstate === 'need_permisison'}>
+            <Reauth />
+          </Match>
+          <Match when={state.ui.viewstate === 'ready'}>
+            <Dashboard />
+          </Match>
+        </Switch>
       </Theme>
     </>
   );

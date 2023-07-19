@@ -6,13 +6,13 @@ export default () => {
   const [_, actions] = useStore();
   return (
     <Layout centered>
-      <Button cta primary onclick={actions.log.watchFolder}>
+      <Button cta primary onclick={actions.log.watch}>
         set log dir
       </Button>
       <br />
       or
       <br />
-      <Button cta onclick={actions.log.openFile}>
+      <Button cta onclick={actions.log.replay}>
         select File
       </Button>
     </Layout>

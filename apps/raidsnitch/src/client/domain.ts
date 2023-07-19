@@ -1,26 +1,23 @@
-import { Emitter } from '@raidsnitch/shared/emitter';
-import type { AsyncClient } from '@raidsnitch/shared/rpc';
+import { State as SnitchState } from '@raidsnitch/snitch';
 import type { SetStoreFunction } from 'solid-js/store';
-import type { CoreEvents, CoreInterface } from '../core/domain';
-import type { LogActions, LogState } from './store/createLogStore';
-import type { UiActions, UiState } from './store/createUiStore';
+import { DebugActions, DebugState } from './store/stores/debug';
+import type { LogActions, LogState } from './store/stores/log';
+import { SnitchActions } from './store/stores/snitch';
+import type { UiActions, UiState } from './store/stores/ui';
 
-export interface ClientState {
+export interface State {
   ui: UiState;
   log: LogState;
-  ready: boolean;
+  snitch: SnitchState;
+  debug: DebugState;
 }
 
-export interface ClientActions {
+export interface Actions {
   ui: UiActions;
   log: LogActions;
+  snitch: SnitchActions;
+  debug: DebugActions;
+  initialize(): void;
 }
 
-export type ClientWorker = Emitter<CoreEvents> & AsyncClient<CoreInterface>;
-
-export type StoreEnhancer = (
-  worker: ClientWorker,
-  actions: ClientActions,
-  state: ClientState,
-  setState: SetStoreFunction<ClientState>,
-) => unknown;
+export type StoreEnhancer = (actions: Actions, state: State, setState: SetStoreFunction<State>) => unknown;

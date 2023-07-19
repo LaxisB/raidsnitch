@@ -11,7 +11,7 @@ export default () => {
     <div class={classes.dashboard}>
       <div class={`${classes.frame} ${classes.frameStats}`}>
         <header>segments</header>
-        <pre>{JSON.stringify(state.log.stats?.segments, null, 4)}</pre>
+        <pre>{JSON.stringify(state.snitch.segments, null, 4)}</pre>
       </div>
       <div class={`${classes.frame} ${classes.frameDebug}`}>
         <Debug />
@@ -20,10 +20,10 @@ export default () => {
         <Actions class={`${classes.frameActions}`} />
       </div>
       <div class={`${classes.frame} ${classes.frameDamage}`}>
-        <For each={state.log.stats?.segments?.ids}>{(segment) => <Details measure="dps" segment={segment} />}</For>
+        <For each={state.snitch.segments?.ids}>{(segment) => <Details measure="dps" segment={segment} />}</For>
       </div>
       <div class={`${classes.frame} ${classes.frameHealing}`}>
-        <For each={state.log.stats?.segments?.ids}>{(segment) => <Details measure="hps" segment={segment} />}</For>
+        <For each={state.snitch.segments?.ids}>{(segment) => <Details measure="hps" segment={segment} />}</For>
       </div>
     </div>
   );

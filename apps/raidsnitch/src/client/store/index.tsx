@@ -1,27 +1,36 @@
 import { ParentProps, createContext, useContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { ClientActions, ClientState } from '../domain';
-import { createLogStore, initialState as logState } from './createLogStore';
-import { createUiStore, initialState as uiState } from './createUiStore';
-import { getWorker } from './worker';
+import { Actions, State } from '../domain';
+import * as dbg from './stores/debug';
+import * as log from './stores/log';
+import * as snitch from './stores/snitch';
+import * as ui from './stores/ui';
 
-const StoreContext = createContext<[ClientState, ClientActions]>();
+const StoreContext = createContext<[State, Actions]>();
+
 export function Provider(props: ParentProps) {
-  const worker = getWorker();
-  const [state, setState] = createStore<ClientState>({
-    ui: uiState,
-    log: logState,
-    ready: false,
+  const [state, setState] = createStore<State>({
+    ui: ui.initialState,
+    log: log.initialState,
+    snitch: snitch.initialState,
+    debug: dbg.initialState,
   });
-  const actions = {} as any;
-  createUiStore(worker, actions, state, setState);
-  createLogStore(worker, actions, state, setState);
+  const actions = {
+    initialize() {
+      actions.log.restore();
+    },
+  } as any;
+  ui.createUiStore(actions, state, setState);
+  log.createLogStore(actions, state, setState);
+  snitch.createSnitchStore(actions, state, setState);
+  dbg.createDebugStore(actions, state, setState);
 
-  worker.restore().then(() => setState('ready', true));
-  (window as any).logs = { worker, state, setState, actions };
+  (window as any).logs = { state, setState, actions };
+
+  actions.initialize();
   return <StoreContext.Provider value={[state, actions]}>{props.children}</StoreContext.Provider>;
 }
 
 export function useStore() {
-  return useContext(StoreContext) as any as [ClientState, ClientActions];
+  return useContext(StoreContext) as any as [State, Actions];
 }
