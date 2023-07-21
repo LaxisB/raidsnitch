@@ -18,7 +18,6 @@ export interface LogActions {
 export interface LogState {
   dirHandle: FileSystemDirectoryHandle | null;
   fileHandle: FileSystemFileHandle | null;
-  isReading: boolean;
   startTime: number;
   readTime: number;
 }
@@ -26,7 +25,6 @@ export interface LogState {
 export const initialState: LogState = {
   dirHandle: null,
   fileHandle: null,
-  isReading: false,
   startTime: 0,
   readTime: 0,
 };
@@ -56,17 +54,19 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
       actions.snitch.reset();
 
       batch(() => {
-        setState('log', 'isReading', false);
         setState('log', 'startTime', 0);
       });
     },
     async restore() {
       await refresh();
       actions.log.reset();
+      const dirHandle = await get<FileSystemDirectoryHandle>('dirHandle');
       dirWatcher = new DirWatcher(new LiveHandler(actions));
-      await dirWatcher.restore();
+      await dirWatcher.watchDirectory(dirHandle);
+      setState('log', 'startTime', Date.now());
       navigate('/waiting');
     },
+
     async watch() {
       let handle: FileSystemDirectoryHandle | undefined;
       const supportsFS = 'showDirectoryPicker' in window;
@@ -80,16 +80,15 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
         return;
       }
       set('dirHandle', handle);
+      set('fileHandle', null);
       actions.log.reset();
 
       dirWatcher = new DirWatcher(new LiveHandler(actions));
       dirWatcher.watchDirectory(handle);
-      batch(() => {
-        setState('log', 'isReading', true);
-        setState('log', 'startTime', Date.now());
-      });
+      setState('log', 'startTime', Date.now());
       navigate('/waiting');
     },
+
     async replay() {
       let handle: FileSystemFileHandle | undefined;
       const supportsFS = 'showDirectoryPicker' in window;
@@ -110,7 +109,6 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
       fileWatcher = new ReplayHandler(actions);
       fileWatcher.handleFileChange(handle);
       batch(() => {
-        setState('log', 'isReading', true);
         setState('log', 'startTime', Date.now());
       });
       navigate('/dashboard');

@@ -9,7 +9,7 @@ import classes from './fileselect.module.scss';
 export default () => {
   const [state, actions] = useStore();
   const navigate = useNavigate();
-  if (state.log.isReading) {
+  if (state.log.fileHandle) {
     navigate('/dashboard');
   }
 

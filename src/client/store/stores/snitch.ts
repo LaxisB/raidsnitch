@@ -42,7 +42,7 @@ function bufferedCall<T>(fn: (items: T[]) => any, interval: number) {
   let timeout: NodeJS.Timeout | null = null;
 
   return function (items: T[]) {
-    buffer.push(...items);
+    buffer = [...buffer, ...items];
     if (timeout) {
       return;
     }

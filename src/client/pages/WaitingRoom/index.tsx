@@ -12,7 +12,7 @@ export default function () {
   }
 
   createEffect(() => {
-    if (store.log.isReading) {
+    if (store.log.fileHandle) {
       navigate('/dashboard');
     }
   });

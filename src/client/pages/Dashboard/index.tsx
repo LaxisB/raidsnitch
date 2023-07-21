@@ -11,7 +11,7 @@ export default () => {
   const navigate = useNavigate();
 
   if (!state.log.fileHandle) {
-    navigate('/');
+    navigate('/waiting');
   }
 
   return (

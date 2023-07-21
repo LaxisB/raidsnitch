@@ -1,4 +1,4 @@
-import { For, createMemo } from 'solid-js';
+import { For, Show, createMemo } from 'solid-js';
 import Sparkline from '../../../../components/Sparkline';
 import { useStore } from '../../../../store';
 import classes from './debug.module.scss';
@@ -14,6 +14,10 @@ export default function (props: DebugProps) {
 
   return (
     <div class={props.class} classList={{ [classes.debug]: true }}>
+      <Show when={state.log.dirHandle != null}>
+        <div>watching for file changes...</div>
+        <br />
+      </Show>
       <For each={dbgKeys()}>
         {(key) => {
           const data = () => state.debug[key];
