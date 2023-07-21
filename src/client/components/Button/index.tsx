@@ -5,14 +5,11 @@ interface ButtonProps extends ParentProps {
   primary?: boolean;
   cta?: boolean;
   onclick?: () => void;
+  class?: string;
 }
 export default (props: ButtonProps) => {
   return (
-    <button
-      class={classes.button}
-      classList={{ [classes.buttonPrimary]: !!props.primary, [classes.buttonCta]: !!props.cta }}
-      onclick={props.onclick}
-    >
+    <button classList={{ [classes.button]: true, [classes.buttonPrimary]: !!props.primary, [classes.buttonCta]: !!props.cta }} {...props}>
       {props.children}
     </button>
   );

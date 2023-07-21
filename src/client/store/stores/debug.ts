@@ -33,5 +33,5 @@ export const createDebugStore: StoreEnhancer = function (actions, state, setStat
     reset() {
       setState('debug', {});
     },
-  } as DebugActions;
+  };
 };

@@ -20,7 +20,7 @@ export const createSnitchStore: StoreEnhancer = function (actions, state, setSta
   const eventBuffer = [];
 
   actions.snitch = {
-    reset() {
+    async reset() {
       log.log('reset');
       handler = snitch.initialize();
       setState('snitch', structuredClone(snitch.initialState));
@@ -33,7 +33,7 @@ export const createSnitchStore: StoreEnhancer = function (actions, state, setSta
         }),
       );
     }, STATE_UPDATE_INTERVAL),
-  } as SnitchActions;
+  };
 };
 
 function bufferedCall<T>(fn: (items: T[]) => any, interval: number) {

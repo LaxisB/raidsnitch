@@ -10,7 +10,7 @@ export default () => {
   const [state] = useStore();
   const navigate = useNavigate();
 
-  if (!state.log.isReading) {
+  if (!state.log.fileHandle) {
     navigate('/');
   }
 
