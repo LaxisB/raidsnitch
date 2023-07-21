@@ -4,13 +4,11 @@ import { Actions, State } from '../domain';
 import * as dbg from './stores/debug';
 import * as log from './stores/log';
 import * as snitch from './stores/snitch';
-import * as ui from './stores/ui';
 
 const StoreContext = createContext<[State, Actions]>();
 
 export function Provider(props: ParentProps) {
   const [state, setState] = createStore<State>({
-    ui: ui.initialState,
     log: log.initialState,
     snitch: snitch.initialState,
     debug: dbg.initialState,
@@ -20,7 +18,6 @@ export function Provider(props: ParentProps) {
       actions.log.restore();
     },
   } as any;
-  ui.createUiStore(actions, state, setState);
   log.createLogStore(actions, state, setState);
   snitch.createSnitchStore(actions, state, setState);
   dbg.createDebugStore(actions, state, setState);

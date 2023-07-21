@@ -1,3 +1,4 @@
+import { useNavigate } from '@solidjs/router';
 import { For } from 'solid-js';
 import { useStore } from '../../store';
 import classes from './dashboard.module.scss';
@@ -7,6 +8,12 @@ import Details from './modules/Details';
 
 export default () => {
   const [state] = useStore();
+  const navigate = useNavigate();
+
+  if (!state.log.isReading) {
+    navigate('/');
+  }
+
   return (
     <div class={classes.dashboard}>
       <div class={`${classes.frame} ${classes.frameStats}`}>

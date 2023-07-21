@@ -1,4 +1,5 @@
 import { wrapLog } from '@/lib/log';
+import { useNavigate } from '@solidjs/router';
 import { get, set } from 'idb-keyval';
 import { batch } from 'solid-js';
 import { DirWatcher } from '../../../lib/fs/DirWatcher';
@@ -37,6 +38,7 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
   let dirWatcher: DirWatcher | null = null;
   let fileWatcher: ReplayHandler | null = null;
   const log = wrapLog('log store');
+  const navigate = useNavigate();
   actions.log = {
     reset() {
       dirWatcher?.close();
@@ -48,7 +50,6 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
       batch(() => {
         setState('log', 'isReading', false);
         setState('log', 'startTime', 0);
-        setState('ui', 'viewstate', 'initial');
       });
     },
     async restore() {
@@ -77,8 +78,8 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
       batch(() => {
         setState('log', 'isReading', true);
         setState('log', 'startTime', Date.now());
-        setState('ui', 'viewstate', 'ready');
       });
+      navigate('/dashboard');
     },
     async replay() {
       let handle: FileSystemFileHandle | undefined;
@@ -100,8 +101,8 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
       batch(() => {
         setState('log', 'isReading', true);
         setState('log', 'startTime', Date.now());
-        setState('ui', 'viewstate', 'ready');
       });
+      navigate('/dashboard');
     },
     async stop() {
       dirWatcher?.close();

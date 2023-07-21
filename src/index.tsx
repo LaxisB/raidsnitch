@@ -1,6 +1,7 @@
 /* @refresh reload */
 import { render } from 'solid-js/web';
 
+import { Router } from '@solidjs/router';
 import App from './client/App';
 import { Provider } from './client/store';
 
@@ -12,9 +13,11 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 
 render(
   () => (
-    <Provider>
-      <App />
-    </Provider>
+    <Router>
+      <Provider>
+        <App />
+      </Provider>
+    </Router>
   ),
   root!,
 );
