@@ -10,6 +10,7 @@ const REPLAY_INTERVAL = 50;
 
 // replay speed
 let TIMESCALE = 10;
+let EMIT_IN_REALTIME = false;
 
 export class ReplayHandler extends BaseFileHandler {
     private readTime = 0;
@@ -49,7 +50,7 @@ export class ReplayHandler extends BaseFileHandler {
     private async loopRead(file: File, reader: ReadableStreamDefaultReader<string>) {
         const now = Date.now();
 
-        if (this.cachedEvents.length >= 1000) {
+        if (EMIT_IN_REALTIME && this.cachedEvents.length >= 1000) {
             await sleep(250);
             this.readTime = now;
             this.schedule(() => this.loopRead(file, reader));
@@ -99,6 +100,13 @@ export class ReplayHandler extends BaseFileHandler {
             clearInterval(this.cachedEventsInterval);
             return;
         }
+        if (!EMIT_IN_REALTIME) {
+            this.emit(this.cachedEvents);
+            this.cachedEvents = [];
+            this.actions.debug.dbg({ Backlog: this.cachedEvents.length });
+            return;
+        }
+
         if (!this.emissionTargetTime) {
             this.emissionTargetTime = this.cachedEvents[0].time;
         }

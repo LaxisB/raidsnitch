@@ -2,6 +2,7 @@ import { wrapLog } from '@/lib/log';
 import { EntityEvent, WowEvent } from '@/lib/parser';
 import type { State } from '..';
 import { CreateHandler } from './domain';
+import { EntityState } from './entities';
 
 const log = wrapLog('dps handler');
 interface DpsMeasure {
@@ -117,21 +118,16 @@ function reattributeDamage(state: State, groupState: DpsGroup, event: EntityEven
   while (beneficiaryEntity?.ownerGuid) {
     beneficiaryEntity = state.entities[beneficiaryEntity.ownerGuid];
   }
-  const beneficiaryState = groupState.entities[beneficiaryEntity.guid];
+  let beneficiaryState = groupState.entities[beneficiaryEntity.guid];
+  if (!beneficiaryState) {
+    groupState.entities[beneficiaryEntity.guid] = createDpsEntity(beneficiaryEntity);
+    beneficiaryState = groupState.entities[beneficiaryEntity.guid];
+  }
 
   const sourceEntity = state.entities[source];
-  // and make sure that sourceState actually exists
   let sourceState = groupState.entities[source];
   if (!sourceState) {
-    groupState.entities[source] = {
-      guid: sourceEntity?.guid,
-      name: sourceEntity?.name,
-      spec: sourceEntity?.spec,
-      entity: sourceEntity,
-      total: 0,
-      perSecond: 0,
-      percent: 0,
-    };
+    groupState.entities[source] = createDpsEntity(sourceEntity);
     sourceState = groupState.entities[source];
   }
 
@@ -160,5 +156,17 @@ function createDpsGroupState(time?: number): DpsGroup {
     top: undefined,
     timeLast: time ?? 0,
     timeStart: time ?? 0,
+  };
+}
+
+
+function createDpsEntity(entity: EntityState) {
+  return {
+    guid: entity.guid,
+    name: entity.name,
+    spec: entity.spec,
+    total: 0,
+    perSecond: 0,
+    percent: 0,
   };
 }
