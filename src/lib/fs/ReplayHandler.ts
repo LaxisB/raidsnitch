@@ -35,9 +35,9 @@ export class ReplayHandler extends BaseFileHandler {
 
         const reader = file.stream().pipeThrough(new TextDecoderStream()).getReader();
         this.actions.debug.dbg({
-                Name: file.name,
-                'Size': Math.fround(file.size / (1024 * 1024)),
-        })
+            Name: file.name,
+            Size: Math.fround(file.size / (1024 * 1024)),
+        });
         this.loopRead(file, reader);
         this.cachedEventsInterval = setInterval(() => this.emitCachedEvents(), REPLAY_INTERVAL);
     }
@@ -79,7 +79,7 @@ export class ReplayHandler extends BaseFileHandler {
         } else {
             clearInterval(this.cachedEventsInterval);
             const total = Date.now() - this.startTime;
-            this.actions.debug.dbg( {
+            this.actions.debug.dbg({
                 'Total Lines': this.totalLines,
                 'Line Parse Time avg (ms)': total / this.totalLines,
                 Backlog: this.cachedEvents.length,
@@ -90,8 +90,7 @@ export class ReplayHandler extends BaseFileHandler {
     }
 
     private async handleLines(lines: string[]) {
-        const res = lines.map((line) => this.parser.parseLine(line))
-            .filter(x => !!x) as WowEvent[];
+        const res = lines.map((line) => this.parser.parseLine(line)).filter((x) => !!x) as WowEvent[];
         this.cachedEvents.push(...res);
     }
 
@@ -123,7 +122,7 @@ export class ReplayHandler extends BaseFileHandler {
         }
 
         this.emissionTargetTime += REPLAY_INTERVAL * TIMESCALE;
-        this.actions.debug.dbg( { 'Target Time': new Date(this.emissionTargetTime).toLocaleTimeString() });
+        this.actions.debug.dbg({ 'Target Time': new Date(this.emissionTargetTime).toLocaleTimeString() });
 
         if (toEmit.length) {
             this.actions.debug.dbg({ Backlog: this.cachedEvents.length });

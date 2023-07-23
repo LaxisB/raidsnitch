@@ -71,8 +71,7 @@ export class LiveHandler extends BaseFileHandler {
     }
 
     async handleLines(lines: string[]) {
-        const events = lines.map((line) => this.parser.parseLine(line))
-            .filter(x => !!x) as WowEvent[];
+        const events = lines.map((line) => this.parser.parseLine(line)).filter((x) => !!x) as WowEvent[];
         this.emit(events);
         return events;
     }

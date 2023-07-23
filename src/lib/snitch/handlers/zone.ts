@@ -2,26 +2,26 @@ import { WowEvent, casts } from '@/lib/parser';
 import type { State } from '..';
 import { CreateHandler } from './domain';
 export interface ZoneState {
-  name: string;
-  id: number;
+    name: string;
+    id: number;
 }
 
 export const createZoneHandler: CreateHandler<ZoneState> = () => {
-  let initialState: ZoneState = {
-    name: '',
-    id: 0,
-  };
+    let initialState: ZoneState = {
+        name: '',
+        id: 0,
+    };
 
-  function handleEvent(event: WowEvent, state: State) {
-    if (casts.eventIsZoneChange(event)) {
-      state.zone = {
-        name: event.untyped[1],
-        id: event.untyped[2],
-      };
+    function handleEvent(event: WowEvent, state: State) {
+        if (casts.eventIsZoneChange(event)) {
+            state.zone = {
+                name: event.untyped[1],
+                id: event.untyped[2],
+            };
+        }
     }
-  }
-  return {
-    initialState,
-    handleEvent,
-  };
+    return {
+        initialState,
+        handleEvent,
+    };
 };

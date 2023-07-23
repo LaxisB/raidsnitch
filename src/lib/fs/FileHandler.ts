@@ -2,16 +2,13 @@ import { WowEvent } from '@/lib/parser';
 import { Actions } from '../../client/domain';
 import { FileHandler } from './domain';
 
-
 export class BaseFileHandler implements FileHandler {
     doStop = false;
-    pendingLoop: number |undefined;
+    pendingLoop: number | undefined;
 
     partial = '';
 
     constructor(protected actions: Actions) {}
-
-
 
     readText(text?: string) {
         if (!text) {

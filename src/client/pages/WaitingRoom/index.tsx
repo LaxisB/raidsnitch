@@ -4,18 +4,18 @@ import Layout from '../../components/Layout';
 import { useStore } from '../../store';
 
 export default function () {
-  const [store] = useStore();
-  const navigate = useNavigate();
+    const [store] = useStore();
+    const navigate = useNavigate();
 
-  if (!store.log.dirHandle) {
-    navigate('/');
-  }
-
-  createEffect(() => {
-    if (store.log.fileHandle) {
-      navigate('/dashboard');
+    if (!store.log.dirHandle) {
+        navigate('/');
     }
-  });
 
-  return <Layout centered>waiting for activity</Layout>;
+    createEffect(() => {
+        if (store.log.fileHandle) {
+            navigate('/dashboard');
+        }
+    });
+
+    return <Layout centered>waiting for activity</Layout>;
 }

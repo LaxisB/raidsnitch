@@ -1,21 +1,21 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 html {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 body {
-  width: 100vw;
+    width: 100vw;
 }
 
 hr {
-  height: 1px;
-  border: none;
-  background: var(--app-foreground);
-  opacity: 0.2;
+    height: 1px;
+    border: none;
+    background: var(--app-foreground);
+    opacity: 0.2;
 }

@@ -7,17 +7,17 @@ export { casts } from './events';
 export type Parser = ReturnType<typeof createParser>;
 
 export function createParser(referenceTime: number) {
-  const lineParser = createLineParser(referenceTime);
+    const lineParser = createLineParser(referenceTime);
 
-  function parseLine(line: string) {
-    const logLine = lineParser.parseLine(line);
-    if (logLine.event === null) {
-      return null;
+    function parseLine(line: string) {
+        const logLine = lineParser.parseLine(line);
+        if (logLine.event === null) {
+            return null;
+        }
+        return parseAsEvent(logLine, referenceTime);
     }
-    return parseAsEvent(logLine, referenceTime);
-  }
 
-  return {
-    parseLine,
-  };
+    return {
+        parseLine,
+    };
 }

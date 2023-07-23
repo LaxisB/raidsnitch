@@ -6,18 +6,18 @@ import { SnitchActions } from './store/stores/snitch';
 import { UiActions, UiState } from './store/stores/ui';
 
 export interface State {
-  log: LogState;
-  snitch: SnitchState;
-  debug: DebugState;
-  ui: UiState;
+    log: LogState;
+    snitch: SnitchState;
+    debug: DebugState;
+    ui: UiState;
 }
 
 export interface Actions {
-  log: LogActions;
-  snitch: SnitchActions;
-  debug: DebugActions;
-  ui: UiActions;
-  initialize(): void;
+    log: LogActions;
+    snitch: SnitchActions;
+    debug: DebugActions;
+    ui: UiActions;
+    initialize(): void;
 }
 
 export type StoreEnhancer = (actions: Actions, state: State, setState: SetStoreFunction<State>) => unknown;

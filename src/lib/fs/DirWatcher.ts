@@ -10,7 +10,7 @@ export class DirWatcher {
     private readDirTimeout: NodeJS.Timeout | null = null;
     protected state = LogStates.INITIAL;
 
-    constructor( private fileHandler: FileHandler) {}
+    constructor(private fileHandler: FileHandler) {}
 
     async restore() {
         const dirHandle = await get('dirHandle');
@@ -68,10 +68,7 @@ export class DirWatcher {
         }
 
         // if we're actively reading from a file, we probably don't need to look for a new one
-        this.readDirTimeout = setTimeout(
-            () => this.watchForFileChanges(),
-            this.state === LogStates.HAS_FILE ? 10_000 : 1000,
-        );
+        this.readDirTimeout = setTimeout(() => this.watchForFileChanges(), this.state === LogStates.HAS_FILE ? 10_000 : 1000);
     }
 
     private async getLatestCombatLog() {

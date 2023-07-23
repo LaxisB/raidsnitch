@@ -1,14 +1,14 @@
 {
-  "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "allowJs": false,
-    "types": ["vite/client", "node", "./src/types.d.ts"],
-    "jsxImportSource": "solid-js",
-    "jsx": "preserve",
-    "paths": {
-      "@/*": ["./src/*"]
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "strict": true,
+        "allowJs": false,
+        "types": ["vite/client", "node", "./src/types.d.ts"],
+        "jsxImportSource": "solid-js",
+        "jsx": "preserve",
+        "paths": {
+            "@/*": ["./src/*"]
+        }
     }
-  }
 }

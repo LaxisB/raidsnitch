@@ -7,28 +7,28 @@ import Debug from './modules/Debug';
 import Details from './modules/Details';
 
 export default () => {
-  const [state] = useStore();
-  const navigate = useNavigate();
+    const [state] = useStore();
+    const navigate = useNavigate();
 
-  if (!state.log.fileHandle) {
-    navigate('/waiting');
-  }
+    if (!state.log.fileHandle) {
+        navigate('/waiting');
+    }
 
-  return (
-    <div class={classes.dashboard}>
-      <div class={`${classes.frame} ${classes.frameStats}`}>
-        <header>segments</header>
-        <pre>{JSON.stringify(state.snitch.segments, null, 4)}</pre>
-      </div>
-      <div class={`${classes.frame} ${classes.frameDebug}`}>
-        <Debug />
-        <hr />
-        <br />
-        <Actions class={`${classes.frameActions}`} />
-      </div>
-      <div class={`${classes.frame} ${classes.frameDamage}`}>
-        <For each={state.snitch.segments?.ids}>{(segment) => <Details measure="dps" segment={segment} />}</For>
-      </div>
-    </div>
-  );
+    return (
+        <div class={classes.dashboard}>
+            <div class={`${classes.frame} ${classes.frameStats}`}>
+                <header>segments</header>
+                <pre>{JSON.stringify(state.snitch.segments, null, 4)}</pre>
+            </div>
+            <div class={`${classes.frame} ${classes.frameDebug}`}>
+                <Debug />
+                <hr />
+                <br />
+                <Actions class={`${classes.frameActions}`} />
+            </div>
+            <div class={`${classes.frame} ${classes.frameDamage}`}>
+                <For each={state.snitch.segments?.ids}>{(segment) => <Details measure="dps" segment={segment} />}</For>
+            </div>
+        </div>
+    );
 };
