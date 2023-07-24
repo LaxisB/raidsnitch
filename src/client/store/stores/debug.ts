@@ -1,3 +1,4 @@
+import { setDebugHandler } from '@/lib/debug';
 import { batch } from 'solid-js';
 import { StoreEnhancer } from '../../domain';
 
@@ -11,6 +12,9 @@ export type DebugState = Record<string, any>;
 export const initialState: DebugState = {};
 
 export const createDebugStore: StoreEnhancer = function (actions, state, setState) {
+    setDebugHandler((vals) => {
+        actions.debug.dbg(vals);
+    });
     actions.debug = {
         dbg(debug) {
             batch(() => {

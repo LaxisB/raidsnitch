@@ -1,15 +1,14 @@
-import { createFileReader } from '@/lib/fs/fs';
+import { debug } from '@/lib/debug';
+import * as fs from '@/lib/fs';
 import { wrapLog } from '@/lib/log';
+import { WowEvent, createParser } from '@/lib/parser';
+import { sleep } from '@/lib/utils';
 import { useNavigate } from '@solidjs/router';
 import { get, set } from 'idb-keyval';
 import { batch } from 'solid-js';
 import { SetStoreFunction } from 'solid-js/store';
-import { DirWatcher } from '../../../lib/fs/DirWatcher';
-import { LiveHandler } from '../../../lib/fs/LiveHandler';
-import { ReplayHandler } from '../../../lib/fs/ReplayHandler';
 import type { Actions, State, StoreEnhancer } from '../../domain';
 
-createFileReader;
 export interface LogActions {
     restore(): Promise<void>;
     reset(): void;
@@ -40,19 +39,46 @@ const refresh = async () => {
 };
 
 export const createLogStore: StoreEnhancer = function (actions, state, setState) {
-    let dirWatcher: DirWatcher | null = null;
-    let fileWatcher: ReplayHandler | null = null;
+    let dirWatcher: fs.DirWatcher | null = null;
+    let fileReader: fs.FileReader | null = null;
+    const readerOpts = { replayEvents: false, chunkSize: 512 * 1024, splitRegex: /^(?=\d)/m };
     const log = wrapLog('log store');
     const navigate = useNavigate();
 
     initialize(actions, state, setState);
 
+    const readFile = async (handle: FileSystemFileHandle, tail = true) => {
+        fileReader?.stop();
+        fileReader = fs.createFileReader(handle, { ...readerOpts, tail });
+        set('fileHandle', handle);
+        setState('log', 'fileHandle', handle);
+        const file = await handle.getFile();
+        const parser = createParser(file.lastModified);
+        for await (const chunk of fileReader.items()) {
+            if (!chunk || !chunk.length) {
+                log.log('no more lines');
+                await sleep(1000);
+                break;
+            }
+            const parseStart = Date.now();
+            const parsed = chunk
+                .map((x) => {
+                    return parser.parseLine(x);
+                })
+                .filter((x) => !!x) as WowEvent[];
+            const parseDur = Date.now() - parseStart;
+            debug({ chunkSize: chunk.length, 'parse Time (ms)': parseDur, 'parses/ms': chunk.length / parseDur });
+            actions.snitch.handleEvents(parsed);
+        }
+        log.log('done reading');
+    };
+
     actions.log = {
         reset() {
-            dirWatcher?.close();
-            fileWatcher?.close();
+            dirWatcher?.stop();
+            fileReader?.stop();
             dirWatcher = null;
-            fileWatcher = null;
+            fileReader = null;
             actions.snitch.reset();
 
             batch(() => {
@@ -63,8 +89,12 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
             await refresh();
             actions.log.reset();
             const dirHandle = await get<FileSystemDirectoryHandle>('dirHandle');
-            dirWatcher = new DirWatcher(new LiveHandler(actions));
-            await dirWatcher.watchDirectory(dirHandle);
+            if (!dirHandle) {
+                return;
+            }
+            dirWatcher = fs.createDirWatcher(dirHandle);
+            dirWatcher.onFileChange(readFile);
+            dirWatcher.start();
             setState('log', 'startTime', Date.now());
             navigate('/waiting');
         },
@@ -81,12 +111,14 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
                 log.warn('cancelled watching directory');
                 return;
             }
+            setState('log', 'dirHandle', handle);
             set('dirHandle', handle);
             set('fileHandle', null);
             actions.log.reset();
 
-            dirWatcher = new DirWatcher(new LiveHandler(actions));
-            dirWatcher.watchDirectory(handle);
+            dirWatcher = fs.createDirWatcher(handle);
+            dirWatcher.onFileChange(readFile);
+            dirWatcher.start();
             setState('log', 'startTime', Date.now());
             navigate('/waiting');
         },
@@ -108,16 +140,15 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
             set('fileHandle', handle);
 
             actions.log.reset();
-            fileWatcher = new ReplayHandler(actions);
-            fileWatcher.handleFileChange(handle);
+            readFile(handle);
             batch(() => {
                 setState('log', 'startTime', Date.now());
             });
             navigate('/dashboard');
         },
         async stop() {
-            dirWatcher?.close();
-            fileWatcher?.close();
+            dirWatcher?.stop();
+            fileReader?.stop();
             actions.log.reset();
         },
     };
