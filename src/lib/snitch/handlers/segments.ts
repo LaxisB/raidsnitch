@@ -1,4 +1,5 @@
 import { WowEvent, casts } from '@/lib/parser';
+import { unwrap } from 'solid-js/store';
 import type { State } from '..';
 import { CreateHandler } from './domain';
 
@@ -38,6 +39,27 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
     };
 
     function handleEvent(event: WowEvent, state: State) {
+        if (casts.eventIsZoneChange(event)) {
+            if (state.segments.active.encounter) {
+                const segment = state.segments.byId[state.segments.active.encounter] as EncounterSegment;
+                if (!segment) {
+                    return;
+                }
+                segment.active = false;
+                segment.endTime = event.time;
+                state.segments.active.encounter = null;
+            }
+            if (state.segments.active.challenge) {
+                const segment = state.segments.byId[state.segments.active.challenge] as ChallengeSegment;
+                if (!segment) {
+                    return;
+                }
+                segment.active = false;
+                segment.endTime = event.time;
+                state.segments.active.challenge = null;
+            }
+        }
+
         if (casts.eventIsEncounterStart(event)) {
             const segment = {
                 active: true,
@@ -53,26 +75,6 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
             state.segments.ids.push(segment.id);
             state.segments.active.encounter = segment.id;
         }
-
-        if (casts.eventIsZoneChange(event)) {
-            if (state.segments.active.encounter) {
-                const segment = state.segments.byId[state.segments.active.encounter] as EncounterSegment;
-                if (!segment) {
-                    return;
-                }
-                segment.active = false;
-                segment.endTime = event.time;
-            }
-            if (state.segments.active.challenge) {
-                const segment = state.segments.byId[state.segments.active.challenge] as ChallengeSegment;
-                if (!segment) {
-                    return;
-                }
-                segment.active = false;
-                segment.endTime = event.time;
-            }
-        }
-
         if (casts.eventIsEncounterEnd(event)) {
             if (state.segments.active.encounter == null) {
                 return;
@@ -82,8 +84,10 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
                 return;
             }
             segment.active = false;
+            segment.success = event.untyped[4];
             segment.endTime = event.time;
             state.segments.active.encounter = null;
+            console.log('encounter end', event, structuredClone(unwrap(state.entities)), structuredClone(unwrap(segment)));
         }
 
         if (casts.eventIsChallengeModeStart(event)) {
@@ -112,7 +116,9 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
             }
             segment.active = false;
             segment.endTime = event.time;
+            segment.success = event.untyped[1];
             state.segments.active.challenge = null;
+            console.log('m+ end', event, structuredClone(unwrap(state.entities)), structuredClone(unwrap(segment)));
         }
 
         if (event.name === 'COMBATANT_INFO') {

@@ -2,7 +2,6 @@ import { wrapLog } from '@/lib/log';
 import { EntityEvent, WowEvent } from '@/lib/parser';
 import type { State } from '..';
 import { CreateHandler } from './domain';
-import { EntityState } from './entities';
 
 const log = wrapLog('dps handler');
 interface DpsMeasure {
@@ -51,6 +50,11 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
             }
             while (entity?.ownerGuid && entity.ownerGuid != entity.guid) {
                 entity = state.entities[entity.ownerGuid];
+            }
+
+            // event is stagger
+            if (event.prefixes[0] === 124255 || event.baseParams.sourceGuid == event.baseParams.destGuid) {
+                return;
             }
             // end stuff we can't attribute
             if (!entity || entity.guid?.startsWith('Player') === false) return;

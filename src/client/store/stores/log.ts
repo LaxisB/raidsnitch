@@ -54,13 +54,14 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
         setState('log', 'fileHandle', handle);
         const file = await handle.getFile();
         const parser = createParser(file.lastModified);
+        let fileStart = Date.now();
+        let parseStart = fileStart;
         for await (const chunk of fileReader.items()) {
             if (!chunk || !chunk.length) {
                 log.log('no more lines');
                 await sleep(1000);
                 break;
             }
-            const parseStart = Date.now();
             const parsed = chunk
                 .map((x) => {
                     return parser.parseLine(x);
@@ -69,7 +70,10 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
             const parseDur = Date.now() - parseStart;
             debug({ chunkSize: chunk.length, 'parse Time (ms)': parseDur, 'parses/ms': chunk.length / parseDur });
             actions.snitch.handleEvents(parsed);
+            parseStart = Date.now();
         }
+
+        debug({ 'file read time (ms)': Date.now() - fileStart });
         log.log('done reading');
     };
 
