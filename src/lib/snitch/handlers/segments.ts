@@ -2,7 +2,7 @@ import { WowEvent, casts } from '@/lib/parser';
 import type { State } from '..';
 import { CreateHandler } from './domain';
 
-interface Segment {
+export interface Segment {
     id: string;
     active: boolean;
     startTime: number;

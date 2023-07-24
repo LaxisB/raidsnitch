@@ -1,5 +1,5 @@
+import { ilerp } from '@/lib/utils';
 import { createEffect, createMemo, createSignal } from 'solid-js';
-import { ilerp } from '../../../lib/lerp';
 import classes from './sparkline.module.scss';
 interface SparklineProps {
     height: number;

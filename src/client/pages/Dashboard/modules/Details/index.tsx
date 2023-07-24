@@ -37,7 +37,7 @@ interface DetailsLineProps {
 function DetailsLine(props: DetailsLineProps) {
     const [store] = useStore();
     const counterState = () => store.snitch[props.measure as any as 'dps'].bySegment[props.segment];
-    const spec = () => counterState()?.entities[props.guid]?.entity?.spec ?? 'nospec';
+    const spec = () => counterState()?.entities[props.guid]?.spec ?? 'nospec';
 
     const barWidth = createMemo(() => calculateBarWidth(counterState()?.entities[props.guid]?.perSecond, counterState()?.top?.perSecond));
 

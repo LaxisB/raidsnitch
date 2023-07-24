@@ -39,7 +39,8 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
             event.name === 'SPELL_PERIODIC_DAMAGE' ||
             event.name === 'SWING_DAMAGE' ||
             event.name === 'RANGE_DAMAGE' ||
-            event.name === 'SPELL_DAMAGE_SUPPORT'
+            event.name === 'SPELL_DAMAGE_SUPPORT' ||
+            event.name === 'SWING_DAMAGE_LANDED_SUPPORT'
         ) {
             // ignore nullids
             if (event.baseParams.sourceGuid === '0000000000000000') return;
@@ -48,7 +49,7 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
             if (entity == null) {
                 return;
             }
-            while (entity?.ownerGuid) {
+            while (entity?.ownerGuid && entity.ownerGuid != entity.guid) {
                 entity = state.entities[entity.ownerGuid];
             }
             // end stuff we can't attribute
@@ -60,7 +61,7 @@ export const createDpsHandler: CreateHandler<DpsState> = () => {
                 if (!state.dps.bySegment[segmentId]) {
                     state.dps.bySegment[segmentId] = createDpsGroupState(event.time);
                 }
-                if (event.name === 'SPELL_DAMAGE_SUPPORT') {
+                if (event.name === 'SPELL_DAMAGE_SUPPORT' || event.name === 'SWING_DAMAGE_LANDED_SUPPORT') {
                     // SPELL_DAMAGE_SUPPORT appears in addition to SPELL_DAMAGE, so we need to subtract it
                     reattributeDamage(state, state.dps.bySegment[segmentId], event);
                 } else {
@@ -111,7 +112,7 @@ function reattributeDamage(state: State, groupState: DpsGroup, event: EntityEven
     }
     groupState.timeLast = event.time;
     const beneficiary = event.baseParams.sourceGuid;
-    const source = event.suffixes[10];
+    const source = event.suffixes[event.suffixes.length - 1];
 
     // get from direct beneficiary to owner (e.g pets to player)
     let beneficiaryEntity = state.entities[beneficiary];

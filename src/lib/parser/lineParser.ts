@@ -84,7 +84,7 @@ function _parsePayload(rest: string, stack: Stack): any[] {
     // EOL :::: exit branch
     // this is the only
     // we're checking for length to avoid matching long strings
-    if (!rest || (rest.length <= 3 && /^\s+$/.test(rest))) {
+    if (!rest || (rest.length <= 3 && rest.trim() == '')) {
         return stack.value();
     }
 

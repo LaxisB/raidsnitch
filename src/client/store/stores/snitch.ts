@@ -14,7 +14,7 @@ export const initialState = structuredClone(snitch.initialState);
 
 const log = wrapLog('snitchStore');
 
-const STATE_UPDATE_INTERVAL = 500;
+const STATE_UPDATE_INTERVAL = 200;
 
 export const createSnitchStore: StoreEnhancer = function (actions, state, setState) {
     const eventBuffer = [];
