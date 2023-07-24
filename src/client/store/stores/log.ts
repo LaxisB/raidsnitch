@@ -1,4 +1,4 @@
-import { createFileReader } from '@/lib/fs/fileReader';
+import { createFileReader } from '@/lib/fs/fs';
 import { wrapLog } from '@/lib/log';
 import { useNavigate } from '@solidjs/router';
 import { get, set } from 'idb-keyval';
