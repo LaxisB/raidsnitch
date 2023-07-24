@@ -1,5 +1,4 @@
 import { WowEvent, casts } from '@/lib/parser';
-import { unwrap } from 'solid-js/store';
 import type { State } from '..';
 import { CreateHandler } from './domain';
 
@@ -87,7 +86,6 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
             segment.success = event.untyped[4];
             segment.endTime = event.time;
             state.segments.active.encounter = null;
-            console.log('encounter end', event, structuredClone(unwrap(state.entities)), structuredClone(unwrap(segment)));
         }
 
         if (casts.eventIsChallengeModeStart(event)) {
@@ -118,7 +116,6 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
             segment.endTime = event.time;
             segment.success = event.untyped[1];
             state.segments.active.challenge = null;
-            console.log('m+ end', event, structuredClone(unwrap(state.entities)), structuredClone(unwrap(segment)));
         }
 
         if (event.name === 'COMBATANT_INFO') {
@@ -126,7 +123,10 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
                 state.segments.byId[state.segments.active.encounter].combatantGuids.push((event as any).untyped[0]);
             }
             if (state.segments.active.challenge) {
-                state.segments.byId[state.segments.active.challenge].combatantGuids.push((event as any).untyped[0]);
+                const segment = state.segments.byId[state.segments.active.challenge];
+                if (!segment.combatantGuids.includes((event as any).untyped[0])) {
+                    segment.combatantGuids.push((event as any).untyped[0]);
+                }
             }
         }
     }
