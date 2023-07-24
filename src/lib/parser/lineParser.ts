@@ -76,7 +76,7 @@ function parseTimeblock(timeBlock: string, reftime: number): number {
 
 function parsePayload(body: string) {
     const stack = makeStack();
-    const payload = _parsePayload(body, stack);
+    const payload = _parsePayload(body.trimEnd(), stack);
     return payload as LogValues[];
 }
 
@@ -84,7 +84,7 @@ function _parsePayload(rest: string, stack: Stack): any[] {
     // EOL :::: exit branch
     // this is the only
     // we're checking for length to avoid matching long strings
-    if (!rest || (rest.length < 2 && /^\s*$/.test(rest))) {
+    if (!rest || (rest.length <= 3 && /^\s+$/.test(rest))) {
         return stack.value();
     }
 
@@ -148,7 +148,7 @@ function parseFlags(flags: string) {
 
 function parsePrimitive(val: string) {
     const isNum = /^-?\d+(\.\d+)?$/.test(val);
-    return isNum ? Number.parseFloat(val) : val;
+    return isNum ? Number.parseFloat(val) : val.trimEnd();
 }
 
 function splitAtQuote(string: string) {
@@ -161,7 +161,13 @@ function splitAtSeparator(string: string) {
     const min = Math.min(string.length, ...offsets);
     const val = string.slice(0, min);
     // trim leading comma if present. we don't need it for parsing
-    const rest = string[min] === ',' ? string.slice(min + 1) : string.slice(min);
+    let rest = string.slice(min);
+    if (rest.startsWith(',')) {
+        rest = rest.slice(1);
+    }
+    if (rest.startsWith('\r\n')) {
+        rest = rest.slice(2);
+    }
     return [val, rest];
 }
 
