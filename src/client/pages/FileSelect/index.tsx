@@ -18,7 +18,7 @@ export default () => {
             <Grid class={classes.fileselect}>
                 <Show when={state.log.dirHandle}>
                     <GridItem span={12} class={classes.continue}>
-                        <Button cta primary onclick={actions.log.restore}>
+                        <Button block cta primary onclick={actions.log.restore}>
                             resume
                         </Button>
                     </GridItem>
@@ -27,10 +27,14 @@ export default () => {
                     </div>
                 </Show>
                 <GridItem class={classes.dir}>
-                    <a onclick={actions.log.watch}>select Directory</a>
+                    <Button block primary onclick={actions.log.watch}>
+                        select Directory
+                    </Button>
                 </GridItem>
                 <GridItem class={classes.file} span={6}>
-                    <a onclick={actions.log.replay}>replay File</a>
+                    <Button block ghost onclick={actions.log.replay}>
+                        replay File
+                    </Button>
                 </GridItem>
             </Grid>
         </Layout>

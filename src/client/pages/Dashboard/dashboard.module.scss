@@ -19,17 +19,24 @@
         bottom: 0.5em;
         right: 0.5em;
         z-index: 1;
-        width: 25em;
+        width: 30em;
         height: 2em;
         overflow: hidden;
 
         &:hover {
-            height: 28em;
+            height: 31em;
             overflow: auto;
             header {
                 display: none;
             }
         }
+    }
+    &--actions {
+        margin-top: 2em;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        grid-gap: 0.5em;
     }
     &--stats {
         grid-column: 5 / span 2;

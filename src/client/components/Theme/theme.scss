@@ -1,6 +1,21 @@
-.theme {
-    --app-color-primary: rgb(103, 172, 230);
+// $dark: #211e20;
+// $mid: #555568;
+// $accent: #a0a08b;
+// $light: #e9efec;
 
+// https://realtimecolors.com/?colors=e0eefa-030b12-67ace6-071b2c-db7624
+$text: #e0eefa;
+$background: #030b12;
+$primary: #67ace6;
+$secondary: #071b2c;
+$accent: #db7624;
+
+.theme {
+    --app-color-primary: #{$primary};
+    --app-background: #{$background};
+    --app-foreground: #{$text};
+    --app-subtle: #{$secondary};
+    --app-accent: #{$accent};
     background: var(--app-background);
     color: var(--app-foreground);
     width: 100%;
@@ -18,15 +33,4 @@
     --class-color--shaman: #0086ff;
     --class-color--warlock: #8788ee;
     --class-color--warrior: #c69b6d;
-}
-.light {
-    --app-background: #eee;
-    --app-foreground: #202124;
-    --app-subtle: #666;
-}
-
-.dark {
-    --app-background: #202124;
-    --app-foreground: #eee;
-    --app-subtle: #666;
 }

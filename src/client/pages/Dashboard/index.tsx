@@ -22,9 +22,7 @@ export default () => {
             <div class={`${classes.frame} ${classes.frameDebug}`}>
                 <header>Debug</header>
                 <Debug />
-                <hr />
-                <br />
-                <Actions class={`${classes.frameActions}`} />
+                <Actions class={classes.frameActions} />
             </div>
             <div class={classes.dashboard}>
                 <div class={`${classes.frame} ${classes.frameStats}`}>

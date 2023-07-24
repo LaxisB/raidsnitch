@@ -45,7 +45,7 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
     const log = wrapLog('log store');
     const navigate = useNavigate();
 
-    initialize(actions, state, setState);
+    initialize(actions, state, setState).catch(console.error);
 
     const readFile = async (handle: FileSystemFileHandle, tail = true) => {
         fileReader?.stop();
@@ -96,6 +96,7 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
             if (!dirHandle) {
                 return;
             }
+            setState('log', 'dirHandle', dirHandle);
             dirWatcher = fs.createDirWatcher(dirHandle);
             dirWatcher.onFileChange(readFile);
             dirWatcher.start();
@@ -159,6 +160,7 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
 };
 
 async function initialize(actions: Actions, state: State, setState: SetStoreFunction<State>) {
+    await set('loadTime', Date.now());
     const savedDirHandle = await get<FileSystemDirectoryHandle>('dirHandle');
     const savedFileHandle = await get<FileSystemFileHandle>('fileHandle');
 

@@ -26,7 +26,6 @@
     },
     "dependencies": {
         "@solidjs/router": "^0.8.2",
-        "idb": "^7.1.1",
         "idb-keyval": "^6.2.1",
         "solid-js": "^1.7.6"
     }
