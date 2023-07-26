@@ -8,20 +8,17 @@ import classes from './debug.module.scss';
 interface DebugProps {
     class?: string;
 }
+const [show, setShow] = createSignal(false);
 
-export default function (props: DebugProps) {
+export const Debug = function Debug(props: DebugProps) {
     const [state] = useStore();
 
     const dbgKeys = createMemo(() => Object.keys(state.debug));
-    const [show, setShow] = createSignal(false);
 
     return (
-        <div class={props.class} classList={{ [classes.debug]: true }}>
-            <Button block kind="secondary" style="ghost" onclick={() => setShow(!show())}>
-                debug
-            </Button>
-            <Grid>
-                <Show when={show()}>
+        <Show when={show()}>
+            <div class={props.class} classList={{ [classes.debug]: true }}>
+                <Grid>
                     <For each={dbgKeys()}>
                         {(key) => {
                             const data = () => state.debug[key];
@@ -43,8 +40,16 @@ export default function (props: DebugProps) {
                             );
                         }}
                     </For>
-                </Show>
-            </Grid>
-        </div>
+                </Grid>
+            </div>
+        </Show>
     );
-}
+};
+
+Debug.Toggle = function DebugToggle() {
+    return (
+        <Button block kind="secondary" style="ghost" onclick={() => setShow(!show())}>
+            debug
+        </Button>
+    );
+};

@@ -37,7 +37,7 @@ interface DetailsLineProps {
 function DetailsLine(props: DetailsLineProps) {
     const spec = () => props.entity?.spec ?? 'nospec';
 
-    const barWidth = createMemo(() => calculateBarWidth(props.entity?.perSecond, props.segment?.top?.perSecond));
+    const barWidth = createMemo(() => calculateBarWidth(props.entity?.total, props.segment?.top?.total));
 
     return (
         <div class={classes.entry} classList={{ [classes['spec' + spec()]]: true }} style={{ '--val': barWidth() }}>
@@ -55,6 +55,6 @@ function calculateBarWidth(value: number | undefined, top: number | undefined) {
     const val = ((value ?? 0) * 100) / (top ?? 1);
     return `${Math.min(val, 100).toFixed(3)}%`;
 }
-function formatName(name: string) {
+function formatName(name?: string) {
     return (name ?? '').split('-')[0];
 }

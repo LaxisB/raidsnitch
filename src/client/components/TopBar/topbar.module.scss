@@ -1,0 +1,20 @@
+.topbar {
+    display: grid;
+    grid-template-areas: 'left spacer center spacer2 right';
+    grid-template-columns: 1fr 1em 1fr 1em 1fr;
+    padding: 0.5em;
+    border-bottom: 1px solid var(--app-secondary);
+}
+
+.left {
+    grid-area: left;
+}
+.center {
+    grid-area: center;
+}
+.right {
+    grid-area: right;
+    display: grid;
+    justify-content: end;
+    grid-auto-flow: column;
+}
