@@ -43,6 +43,8 @@ function DetailsLine(props: DetailsLineProps) {
         <div class={classes.entry} classList={{ [classes['spec' + spec()]]: true }} style={{ '--val': barWidth() }}>
             <div class={classes.entryName}>{formatName(props.entity.name)}</div>{' '}
             <div class={classes.entryValue}>
+                {props.entity.percent.toFixed(2)}
+                {'% | '}
                 {formatShortNum(props.entity?.total ?? 0)}
                 {' | '}
                 {formatShortNum(props.entity?.perSecond ?? 0).padStart(7, ' ')}

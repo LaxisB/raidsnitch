@@ -154,14 +154,18 @@ function addDamage(state: DpsGroup, guid: string, amount: number, combatTime: nu
         throw new Error(`No measure for ${guid}`);
     }
     measure.total += amount;
-    measure.perSecond = measure.total / (combatTime / 1000);
-    measure.percent = (measure.total * 100) / total;
 }
 
 function sortGroup(groupState: DpsGroup) {
     groupState.ids = Object.entries(groupState.entities)
         .sort(([, a], [, b]) => b.total - a.total)
         .map(([guid]) => guid);
+
+    for (let id in groupState.entities) {
+        const entity = groupState.entities[id];
+        entity.perSecond = entity.total / groupState.duration;
+        entity.percent = (entity.total * 100) / groupState.total;
+    }
 
     groupState.top = { ...groupState.entities[groupState.ids[0]] };
 }
