@@ -1,4 +1,5 @@
 import { formatDuration, formatShortNum } from '@/lib/format';
+import { DpsGroup, DpsMeasure } from '@/lib/snitch/handlers/dps';
 import { For, createMemo } from 'solid-js';
 import { useStore } from '../../../../store';
 import classes from './dps.module.scss';
@@ -14,40 +15,37 @@ export default (props: DetailsProps) => {
     const fallback = <span>-</span>;
 
     const base = createMemo(() => store.snitch[props.measure as any as 'dps']?.bySegment[props.segment]);
-
-    const dur = createMemo(() => formatDuration(base()?.timeLast! - base()?.timeStart!));
+    const dur = createMemo(() => formatDuration(base()?.duration));
+    const ids = () => base()?.ids?.map((id) => base().entities[id]) ?? [];
 
     return (
         <div class={classes.dps}>
             <header class={classes.header}>
                 {props.measure} for {store.snitch.segments.byId[props.segment]?.name} ({dur()})
             </header>
-            <For each={base()?.ids} fallback={fallback}>
-                {(guid) => <DetailsLine guid={guid} measure={props.measure} segment={props.segment} />}
+            <For each={ids()} fallback={fallback}>
+                {(entity) => <DetailsLine entity={entity} segment={base()} />}
             </For>
         </div>
     );
 };
 
 interface DetailsLineProps {
-    guid: string;
-    measure: string;
-    segment: string;
+    entity: DpsMeasure;
+    segment: DpsGroup;
 }
 function DetailsLine(props: DetailsLineProps) {
-    const [store] = useStore();
-    const counterState = () => store.snitch[props.measure as any as 'dps'].bySegment[props.segment];
-    const spec = () => counterState()?.entities[props.guid]?.spec ?? 'nospec';
+    const spec = () => props.entity?.spec ?? 'nospec';
 
-    const barWidth = createMemo(() => calculateBarWidth(counterState()?.entities[props.guid]?.perSecond, counterState()?.top?.perSecond));
+    const barWidth = createMemo(() => calculateBarWidth(props.entity?.perSecond, props.segment?.top?.perSecond));
 
     return (
         <div class={classes.entry} classList={{ [classes['spec' + spec()]]: true }} style={{ '--val': barWidth() }}>
-            <div class={classes.entryName}>{counterState()?.entities[props.guid].name}</div>{' '}
+            <div class={classes.entryName}>{formatName(props.entity.name)}</div>{' '}
             <div class={classes.entryValue}>
-                {formatShortNum(counterState()?.entities[props.guid]?.total ?? 0)}
+                {formatShortNum(props.entity?.total ?? 0)}
                 {' | '}
-                {formatShortNum(counterState()?.entities[props.guid]?.perSecond ?? 0).padStart(7, ' ')}
+                {formatShortNum(props.entity?.perSecond ?? 0).padStart(7, ' ')}
             </div>
         </div>
     );
@@ -56,4 +54,7 @@ function DetailsLine(props: DetailsLineProps) {
 function calculateBarWidth(value: number | undefined, top: number | undefined) {
     const val = ((value ?? 0) * 100) / (top ?? 1);
     return `${Math.min(val, 100).toFixed(3)}%`;
+}
+function formatName(name: string) {
+    return (name ?? '').split('-')[0];
 }

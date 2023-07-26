@@ -1,6 +1,6 @@
 import { useNavigate } from '@solidjs/router';
 import { createEffect } from 'solid-js';
-import Layout from '../../components/Layout';
+import Page from '../../components/Page';
 import { useStore } from '../../store';
 
 export default function () {
@@ -17,5 +17,5 @@ export default function () {
         }
     });
 
-    return <Layout centered>waiting for activity</Layout>;
+    return <Page centered>waiting for activity</Page>;
 }

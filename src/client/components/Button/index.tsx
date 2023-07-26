@@ -1,27 +1,27 @@
-import { ParentProps } from 'solid-js';
+import { JSX } from 'solid-js/h/jsx-runtime';
 import classes from './button.module.scss';
 
-interface ButtonProps extends ParentProps {
-    primary?: boolean;
-    cta?: boolean;
+interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
+    kind?: 'primary' | 'secondary' | 'accent';
+    style?: 'cta' | 'ghost';
     block?: boolean;
-    ghost?: boolean;
-    onclick?: () => void;
-    class?: string;
 }
 export default (props: ButtonProps) => {
+    const { kind, style, block, ...rest } = props;
     return (
         <button
             classList={{
                 [classes.button]: true,
-                [classes.buttonBlock]: !!props.block,
-                [classes.buttonGhost]: !!props.ghost,
-                [classes.buttonPrimary]: !!props.primary,
-                [classes.buttonCta]: !!props.cta,
+                [classes.buttonBlock]: !!block,
+                [classes.buttonGhost]: style === 'ghost',
+                [classes.buttonCta]: style === 'cta',
+                [classes.buttonPrimary]: kind === 'primary',
+                [classes.buttonSecondary]: kind === 'secondary',
+                [classes.buttonAccent]: kind === 'accent',
             }}
-            {...props}
+            {...rest}
         >
-            {props.children}
+            {props.children as any}
         </button>
     );
 };

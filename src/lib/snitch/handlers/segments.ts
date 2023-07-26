@@ -6,7 +6,7 @@ export interface Segment {
     id: string;
     active: boolean;
     startTime: number;
-    endTime?: number;
+    duration?: number;
     name: string;
     success?: number;
     combatantGuids: string[];
@@ -23,8 +23,10 @@ interface ChallengeSegment extends Segment {
     affixes: any[];
 }
 
+type SegmentType = EncounterSegment | ChallengeSegment;
+
 export interface SegmentState {
-    byId: Record<string, Segment>;
+    byId: Record<string, SegmentType>;
     ids: string[];
     active: { encounter: string | null; challenge: string | null };
 }
@@ -45,7 +47,7 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
                     return;
                 }
                 segment.active = false;
-                segment.endTime = event.time;
+                segment.duration = event.time - segment.startTime;
                 state.segments.active.encounter = null;
             }
             if (state.segments.active.challenge) {
@@ -54,7 +56,7 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
                     return;
                 }
                 segment.active = false;
-                segment.endTime = event.time;
+                segment.duration = event.time - segment.startTime;
                 state.segments.active.challenge = null;
             }
         }
@@ -84,7 +86,7 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
             }
             segment.active = false;
             segment.success = event.untyped[4];
-            segment.endTime = event.time;
+            segment.duration = event.untyped[5];
             state.segments.active.encounter = null;
         }
 
@@ -113,7 +115,7 @@ export const createSegmentHandler: CreateHandler<SegmentState> = () => {
                 return;
             }
             segment.active = false;
-            segment.endTime = event.time;
+            segment.duration = event.untyped[3];
             segment.success = event.untyped[1];
             state.segments.active.challenge = null;
         }

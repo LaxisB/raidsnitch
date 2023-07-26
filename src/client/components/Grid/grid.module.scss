@@ -9,3 +9,10 @@
         align-content: center;
     }
 }
+
+.item {
+    grid-column-start: var(--col);
+    grid-column-end: span var(--colspan);
+    grid-row-start: var(--row);
+    grid-row-end: span var(--rowspan);
+}

@@ -9,7 +9,7 @@ export default function (props: any) {
         <Grid {...props}>
             <Button onclick={actions.log.watch}>watch directory</Button>
             <Button onclick={actions.log.replay}>replay file</Button>
-            <Button primary onclick={actions.log.stop}>
+            <Button kind="secondary" onclick={actions.log.stop}>
                 stop
             </Button>
         </Grid>

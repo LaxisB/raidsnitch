@@ -12,8 +12,16 @@
     cursor: pointer;
 
     &--primary {
-        border-color: var(--app-color-primary);
-        color: var(--app-color-primary);
+        border-color: var(--app-primary);
+        color: var(--app-primary);
+    }
+    &--secondary {
+        border-color: var(--app-secondary);
+        color: var(--app-secondary);
+    }
+    &--accent {
+        border-color: var(--app-accent);
+        color: var(--app-accent);
     }
     &--cta {
         font-size: typo.$size1;

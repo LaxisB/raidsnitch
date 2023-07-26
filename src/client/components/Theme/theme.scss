@@ -4,17 +4,19 @@
 // $light: #e9efec;
 
 // https://realtimecolors.com/?colors=e0eefa-030b12-67ace6-071b2c-db7624
-$text: #e0eefa;
-$background: #030b12;
-$primary: #67ace6;
-$secondary: #071b2c;
-$accent: #db7624;
+
+// andromeda colors
+$text: #d5ced9;
+$background: #23262e;
+$primary: #00e8c6;
+$secondary: #a0a1a7cc;
+$accent: #f39c12;
 
 .theme {
-    --app-color-primary: #{$primary};
+    --app-primary: #{$primary};
     --app-background: #{$background};
     --app-foreground: #{$text};
-    --app-subtle: #{$secondary};
+    --app-secondary: #{$secondary};
     --app-accent: #{$accent};
     background: var(--app-background);
     color: var(--app-foreground);

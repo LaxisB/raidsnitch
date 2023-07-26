@@ -2,7 +2,6 @@ import { debug } from '@/lib/debug';
 import * as fs from '@/lib/fs';
 import { wrapLog } from '@/lib/log';
 import { WowEvent, createParser } from '@/lib/parser';
-import { sleep } from '@/lib/utils';
 import { useNavigate } from '@solidjs/router';
 import { get, set } from 'idb-keyval';
 import { batch } from 'solid-js';
@@ -41,7 +40,7 @@ const refresh = async () => {
 export const createLogStore: StoreEnhancer = function (actions, state, setState) {
     let dirWatcher: fs.DirWatcher | null = null;
     let fileReader: fs.FileReader | null = null;
-    const readerOpts = { replayEvents: false, chunkSize: 512 * 1024, splitRegex: /^(?=\d)/m };
+    const readerOpts = { replayEvents: false, chunkSize: 128 * 1024, splitRegex: /^(?=\d)/m };
     const log = wrapLog('log store');
     const navigate = useNavigate();
 
@@ -58,9 +57,7 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
         let parseStart = fileStart;
         for await (const chunk of fileReader.items()) {
             if (!chunk || !chunk.length) {
-                log.log('no more lines');
-                await sleep(1000);
-                break;
+                continue;
             }
             const parsed = chunk
                 .map((x) => {
@@ -72,9 +69,6 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
             actions.snitch.handleEvents(parsed);
             parseStart = Date.now();
         }
-
-        debug({ 'file read time (ms)': Date.now() - fileStart });
-        log.log('done reading');
     };
 
     actions.log = {
@@ -121,7 +115,7 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
             set('fileHandle', null);
             actions.log.reset();
 
-            dirWatcher = fs.createDirWatcher(handle);
+            dirWatcher = fs.createDirWatcher(handle, { emitOnStart: true });
             dirWatcher.onFileChange(readFile);
             dirWatcher.start();
             setState('log', 'startTime', Date.now());

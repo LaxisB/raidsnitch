@@ -25,7 +25,7 @@ $continue-height: 6em;
 .divider {
     grid-area: divider;
     margin: 1em 0;
-    color: var(--app-subtle);
+    color: var(--app-secondary);
     position: relative;
     text-align: center;
     user-select: none;
@@ -44,7 +44,7 @@ $continue-height: 6em;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: var(--app-subtle);
+        background: var(--app-secondary);
         opacity: 0.5;
     }
 }

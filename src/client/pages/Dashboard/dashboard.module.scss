@@ -10,7 +10,7 @@
 
 .frame {
     padding: 0.5em;
-    border: 1px solid var(--app-subtle);
+    border: 1px solid var(--app-secondary);
     background: var(--app-background);
     overflow: auto;
 
@@ -20,22 +20,14 @@
         right: 0.5em;
         z-index: 1;
         width: 30em;
-        height: 2em;
+        height: auto;
         overflow: hidden;
-
-        &:hover {
-            height: 31em;
-            overflow: auto;
-            header {
-                display: none;
-            }
-        }
     }
     &--actions {
         margin-top: 2em;
         width: 100%;
         display: grid;
-        grid-template-columns: repeat(3, auto);
+        grid-template-columns: repeat(3, auto) !important;
         grid-gap: 0.5em;
     }
     &--stats {

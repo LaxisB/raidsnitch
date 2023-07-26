@@ -1,15 +1,15 @@
 import { ParentProps, createContext, useContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { Actions, State } from '../domain';
+import { Actions, Store } from '../domain';
 import * as dbg from './stores/debug';
 import * as log from './stores/log';
 import * as snitch from './stores/snitch';
 import * as ui from './stores/ui';
 
-const StoreContext = createContext<[State, Actions]>();
+const StoreContext = createContext<[Store, Actions]>();
 
 export function Provider(props: ParentProps) {
-    const [state, setState] = createStore<State>({
+    const [state, setState] = createStore<Store>({
         log: log.initialState,
         snitch: snitch.initialState,
         debug: dbg.initialState,
@@ -27,5 +27,5 @@ export function Provider(props: ParentProps) {
 }
 
 export function useStore() {
-    return useContext(StoreContext) as any as [State, Actions];
+    return useContext(StoreContext) as any as [Store, Actions];
 }

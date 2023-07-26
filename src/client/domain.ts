@@ -5,7 +5,7 @@ import type { LogActions, LogState } from './store/stores/log';
 import { SnitchActions } from './store/stores/snitch';
 import { UiActions, UiState } from './store/stores/ui';
 
-export interface State {
+export interface Store {
     log: LogState;
     snitch: SnitchState;
     debug: DebugState;
@@ -20,4 +20,4 @@ export interface Actions {
     initialize(): void;
 }
 
-export type StoreEnhancer = (actions: Actions, state: State, setState: SetStoreFunction<State>) => unknown;
+export type StoreEnhancer = (actions: Actions, state: Store, setState: SetStoreFunction<Store>) => unknown;

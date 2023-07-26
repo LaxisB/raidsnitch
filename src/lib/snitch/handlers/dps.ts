@@ -2,9 +2,10 @@ import { wrapLog } from '@/lib/log';
 import { EntityEvent, WowEvent } from '@/lib/parser';
 import type { State } from '..';
 import { CreateHandler } from './domain';
+import { EntityState } from './entities';
 
 const log = wrapLog('dps handler');
-interface DpsMeasure {
+export interface DpsMeasure {
     guid?: string;
     name?: string;
     spec?: number;
@@ -20,7 +21,7 @@ export interface DpsGroup {
     top?: DpsMeasure;
     total: number;
     timeStart: number;
-    timeLast: number;
+    duration: number;
 }
 
 export interface DpsState {
@@ -84,37 +85,23 @@ function updateDpsGroup(state: State, groupState: DpsGroup | undefined, guid: st
     if (!groupState) {
         return;
     }
-    groupState.timeLast = event.time;
+    groupState.duration = event.time - groupState.timeStart;
+
     if (!groupState.entities[guid]) {
         const entity = state.entities[guid];
-        groupState.entities[guid] = {
-            guid: entity?.guid,
-            name: entity?.name,
-            spec: entity?.spec,
-            entity,
-            total: 0,
-            perSecond: 0,
-            percent: 0,
-        };
+        groupState.entities[guid] = createDpsEntity(entity);
     }
-    const entityState = groupState.entities[guid];
 
     groupState.total += event.suffixes![0];
-    entityState.total += event.suffixes![0];
-    entityState.perSecond = entityState.total / ((event.time - groupState.timeStart) / 1000);
-    entityState.percent = (entityState.total * 100) / groupState.total;
-    groupState.ids = Object.entries(groupState.entities)
-        .sort(([, a], [, b]) => b.total - a.total)
-        .map(([guid]) => guid);
-
-    groupState.top = { ...groupState.entities[groupState.ids[0]] };
+    addDamage(groupState, guid, event.suffixes![0], groupState.duration, groupState.total);
+    sortGroup(groupState);
 }
 
 function reattributeDamage(state: State, groupState: DpsGroup, event: EntityEvent) {
     if (!groupState) {
         return;
     }
-    groupState.timeLast = event.time;
+    groupState.duration = event.time - groupState.timeStart;
     const beneficiary = event.baseParams.sourceGuid;
     const source = event.suffixes[event.suffixes.length - 1];
 
@@ -123,34 +110,20 @@ function reattributeDamage(state: State, groupState: DpsGroup, event: EntityEven
     while (beneficiaryEntity?.ownerGuid) {
         beneficiaryEntity = state.entities[beneficiaryEntity.ownerGuid];
     }
-    let beneficiaryState = groupState.entities[beneficiaryEntity.guid];
-    if (!beneficiaryState) {
+    if (!groupState.entities[beneficiaryEntity.guid]) {
         groupState.entities[beneficiaryEntity.guid] = createDpsEntity(beneficiaryEntity);
-        beneficiaryState = groupState.entities[beneficiaryEntity.guid];
     }
 
     const sourceEntity = state.entities[source];
-    let sourceState = groupState.entities[source];
-    if (!sourceState) {
+    if (!groupState.entities[sourceEntity.guid]) {
         groupState.entities[source] = createDpsEntity(sourceEntity);
-        sourceState = groupState.entities[source];
     }
 
     const amount = event.suffixes[0];
 
-    beneficiaryState.total -= amount;
-    beneficiaryState.perSecond = beneficiaryState.total / ((event.time - groupState.timeStart) / 1000);
-    beneficiaryState.percent = (beneficiaryState.total * 100) / groupState.total;
-
-    sourceState.total += amount;
-    sourceState.perSecond = sourceState.total / ((event.time - groupState.timeStart) / 1000);
-    sourceState.percent = (sourceState.total * 100) / groupState.total;
-
-    groupState.ids = Object.entries(groupState.entities)
-        .sort(([, a], [, b]) => b.total - a.total)
-        .map(([guid]) => guid);
-
-    groupState.top = { ...groupState.entities[groupState.ids[0]] };
+    addDamage(groupState, beneficiary, -amount, groupState.duration, groupState.total);
+    addDamage(groupState, source, amount, groupState.duration, groupState.total);
+    sortGroup(groupState);
 }
 
 function createDpsGroupState(time?: number): DpsGroup {
@@ -159,7 +132,7 @@ function createDpsGroupState(time?: number): DpsGroup {
         entities: {},
         ids: [],
         top: undefined,
-        timeLast: time ?? 0,
+        duration: time ?? 0,
         timeStart: time ?? 0,
     };
 }
@@ -173,4 +146,22 @@ function createDpsEntity(entity: EntityState) {
         perSecond: 0,
         percent: 0,
     };
+}
+
+function addDamage(state: DpsGroup, guid: string, amount: number, combatTime: number, total: number) {
+    let measure = state.entities[guid];
+    if (!measure) {
+        throw new Error(`No measure for ${guid}`);
+    }
+    measure.total += amount;
+    measure.perSecond = measure.total / (combatTime / 1000);
+    measure.percent = (measure.total * 100) / total;
+}
+
+function sortGroup(groupState: DpsGroup) {
+    groupState.ids = Object.entries(groupState.entities)
+        .sort(([, a], [, b]) => b.total - a.total)
+        .map(([guid]) => guid);
+
+    groupState.top = { ...groupState.entities[groupState.ids[0]] };
 }
