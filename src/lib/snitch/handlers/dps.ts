@@ -151,7 +151,7 @@ function createDpsEntity(entity: EntityState) {
 function addDamage(state: DpsGroup, guid: string, amount: number, combatTime: number, total: number) {
     let measure = state.entities[guid];
     if (!measure) {
-        throw new Error(`No measure for ${guid}`);
+        return;
     }
     measure.total += amount;
 }
