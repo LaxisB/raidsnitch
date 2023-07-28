@@ -1,9 +1,15 @@
 {
     "compilerOptions": {
         "module": "ESNext",
-        "moduleResolution": "Bundler",
+        "moduleResolution": "Node",
         "strict": true,
         "allowJs": false,
+        "skipLibCheck": false,
+        "esModuleInterop": false,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true,
+        "isolatedModules": true,
         "types": ["vite/client", "node", "./src/types.d.ts"],
         "jsxImportSource": "solid-js",
         "jsx": "preserve",
