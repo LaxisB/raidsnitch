@@ -8,7 +8,6 @@ import clsx from 'clsx';
 import { For, Show, createMemo, createSignal } from 'solid-js';
 import { useStore } from '../../store';
 import classes from './dashboard.module.scss';
-import Actions from './modules/Actions';
 import { Debug } from './modules/Debug';
 import Details from './modules/Details';
 
@@ -62,7 +61,6 @@ export default () => {
                 </TopBar.Left>
                 <TopBar.Right>
                     <Debug.Toggle />
-                    <Actions />
                 </TopBar.Right>
             </TopBar>
             <Debug class={clsx(classes.frame, classes.frameDebug)} />
