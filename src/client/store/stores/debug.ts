@@ -1,4 +1,4 @@
-import { setDebugHandler } from '@/lib/debug';
+import { DebugValues, SparklineDebug, SparklineOpts, TextDebug, setDebugHandler } from '@/lib/debug';
 import { batch } from 'solid-js';
 import { StoreEnhancer } from '../../domain';
 
@@ -7,7 +7,14 @@ export interface DebugActions {
     reset(): void;
 }
 
-export type DebugState = Record<string, any>;
+interface SparklineConfig {
+    type: 'sparkline';
+    val: number[];
+    opts: Partial<SparklineOpts>;
+}
+type TextConfig = TextDebug;
+
+export type DebugState = Record<string, SparklineConfig | TextConfig>;
 
 export const initialState: DebugState = {};
 
@@ -16,20 +23,28 @@ export const createDebugStore: StoreEnhancer = function (actions, state, setStat
         actions.debug.dbg(vals);
     });
     actions.debug = {
-        dbg(debug) {
+        dbg(debug: DebugValues) {
             batch(() => {
                 for (const key in debug) {
-                    if (typeof debug[key] === 'number') {
-                        setState('debug', key, (old) => {
+                    if (debug[key].type === 'sparkline') {
+                        let sparkline = debug[key] as any as SparklineDebug;
+                        setState('debug', key, (old: unknown) => {
                             if (!old) {
-                                return [debug[key]];
+                                return {
+                                    type: 'sparkline',
+                                    val: [sparkline.val],
+                                    opts: sparkline.opts,
+                                } as SparklineConfig;
                             }
-                            return old.concat(debug[key]);
+                            const o = old as SparklineConfig;
+                            return { ...o, val: [...o.val, sparkline.val].slice(-(o.opts?.window ?? 100)) };
                         });
-                    } else {
-                        if (state.debug[key] !== debug[key]) {
-                            setState('debug', key, debug[key]);
-                        }
+                        continue;
+                    }
+                    if (debug[key].type === 'text') {
+                        let text = debug[key] as TextConfig;
+                        setState('debug', key, text);
+                        continue;
                     }
                 }
             });

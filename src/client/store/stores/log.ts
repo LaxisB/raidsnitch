@@ -1,4 +1,4 @@
-import { debug } from '@/lib/debug';
+import * as debug from '@/lib/debug';
 import * as fs from '@/lib/fs';
 import { wrapLog } from '@/lib/log';
 import { WowEvent, createParser } from '@/lib/parser';
@@ -65,7 +65,11 @@ export const createLogStore: StoreEnhancer = function (actions, state, setState)
                 })
                 .filter((x) => !!x) as WowEvent[];
             const parseDur = Date.now() - parseStart;
-            debug({ chunkSize: chunk.length, 'parse Time (ms)': parseDur, 'parses/ms': chunk.length / parseDur });
+            debug.debug({
+                chunkSize: debug.sparkline(chunk.length, { min: 0 }),
+                'parse Time (ms)': debug.sparkline(parseDur, { min: 0, max: 50 }),
+                'parses/ms': debug.sparkline(chunk.length / parseDur, { min: 0, max: 100 }),
+            });
             actions.snitch.handleEvents(parsed);
             parseStart = Date.now();
         }

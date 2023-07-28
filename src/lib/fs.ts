@@ -1,7 +1,7 @@
 import { formatFileSize } from '@/lib/format';
 import { wrapLog } from '@/lib/log';
 import { sleep } from '@/lib/utils';
-import { debug } from './debug';
+import * as debug from './debug';
 
 const log = wrapLog('fileReader');
 
@@ -77,12 +77,12 @@ export function createFileReader(handle: FileSystemFileHandle, options?: Partial
             const lines = (remainder + chunk).split(opts.splitRegex);
             remainder = lines.pop() ?? '';
 
-            debug({
-                file: file.name,
-                size: file.size,
-                offset,
-                chunkSize: opts.chunkSize,
-                lines: lines.length,
+            debug.debug({
+                file: debug.text(file.name),
+                size: debug.text(file.size),
+                offset: debug.sparkline(offset),
+                chunkSize: debug.sparkline(opts.chunkSize, { min: 0 }),
+                lines: debug.sparkline(lines.length, { min: 0 }),
             });
             yield lines;
         }
@@ -133,9 +133,9 @@ export function createDirWatcher(handle: FileSystemDirectoryHandle, options?: Pa
         if (file) {
             if (file.name !== lastActiveFile?.name) {
                 lastActiveFile = file;
-                debug({
-                    dir: handle.name,
-                    fileChange: new Date().toLocaleTimeString(),
+                debug.debug({
+                    dir: debug.text(handle.name),
+                    fileChange: debug.text(new Date().toLocaleTimeString()),
                 });
                 onFileChange?.(file);
             }

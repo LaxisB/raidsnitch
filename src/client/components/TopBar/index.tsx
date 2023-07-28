@@ -1,7 +1,12 @@
+import clsx from 'clsx';
 import { ParentProps } from 'solid-js';
 import classes from './topbar.module.scss';
-export const TopBar = function TopBar(props: ParentProps) {
-    return <div class={classes.topbar}>{props.children}</div>;
+
+interface TopBarProps extends ParentProps{
+    class?: string;
+}
+export const TopBar = function TopBar(props: TopBarProps) {
+    return <div class={clsx(classes.topbar, props.class)}>{props.children}</div>;
 };
 
 TopBar.Left = function TopBarLeft(props: ParentProps) {

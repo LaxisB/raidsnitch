@@ -1,6 +1,6 @@
 import Button from '@/client/components/Button';
 import Grid, { GridItem } from '@/client/components/Grid';
-import { For, Show, createMemo, createSignal } from 'solid-js';
+import { For, Match, Show, Switch, createMemo, createSignal } from 'solid-js';
 import Sparkline from '../../../../components/Sparkline';
 import { useStore } from '../../../../store';
 import classes from './debug.module.scss';
@@ -28,13 +28,18 @@ export const Debug = function Debug(props: DebugProps) {
                                         {key}
                                     </GridItem>
                                     <GridItem span={8} class={classes.debugValue}>
-                                        {typeof Array.isArray(data()) && typeof data()[0] === 'number' ? (
-                                            <>
-                                                <Sparkline window={100} height={32} data={data} />
-                                            </>
-                                        ) : (
-                                            data()
-                                        )}
+                                        <Switch>
+                                            <Match when={data().type === 'sparkline'}>
+                                                <Sparkline
+                                                    height={32}
+                                                    window={(data() as any).opts?.window}
+                                                    min={(data() as any).opts?.min}
+                                                    max={(data() as any)?.opts.max}
+                                                    data={(data() as any).val}
+                                                />
+                                            </Match>
+                                            <Match when={data().type === 'text'}>{data().val}</Match>
+                                        </Switch>
                                     </GridItem>
                                 </>
                             );

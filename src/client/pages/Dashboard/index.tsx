@@ -46,8 +46,8 @@ export default () => {
     });
 
     return (
-        <Page>
-            <TopBar>
+        <Page class={classes.wrapper}>
+            <TopBar class={classes.topbar}>
                 <TopBar.Left>
                     <Select onChange={(e) => setSegment(e.target.value)}>
                         <option selected disabled>
@@ -63,7 +63,9 @@ export default () => {
                     <Debug.Toggle />
                 </TopBar.Right>
             </TopBar>
+
             <Debug class={clsx(classes.frame, classes.frameDebug)} />
+
             <div class={classes.dashboard}>
                 <div class={`${classes.frame} ${classes.frameStats}`}>
                     <header>segments</header>

@@ -4,7 +4,9 @@ import classes from './sparkline.module.scss';
 interface SparklineProps {
     height: number;
     window: number;
-    data: () => number[];
+    min?: number;
+    max?: number;
+    data: number[];
 }
 
 export default (props: SparklineProps) => {
@@ -14,17 +16,17 @@ export default (props: SparklineProps) => {
 
     let intl = new Intl.NumberFormat('en-US');
     let currentVal = createMemo(() => {
-        const data = props.data();
+        const data = props.data;
         return data[data.length - 1];
     });
     createEffect(() => {
-        let data = props.data();
-        const width = Math.max(el.clientWidth, props.window);
+        let data = props.data;
+        const width = Math.max(el.clientWidth, props.window ?? data.length);
         const items = data.slice(-props.window);
         const height = props.height;
 
-        const min = Math.min(...items) ?? 0;
-        const max = Math.max(...items) ?? 0;
+        const min = props.min ?? Math.min(...items) ?? 0;
+        const max = props.max ?? Math.max(...items) ?? 0;
 
         const perItemOffset = width / items.length;
 
